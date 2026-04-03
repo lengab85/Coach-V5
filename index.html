@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mon Coach">
+<title>Mon Coach Fitness</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+:root{
+  --green:#22c55e;--green-dark:#16a34a;--green-bg:#dcfce7;--green-text:#15803d;
+  --blue:#3b82f6;--blue-bg:#dbeafe;--blue-text:#1d4ed8;
+  --amber-bg:#fef3c7;--amber-text:#92400e;
+  --red:#ef4444;--red-bg:#fee2e2;--red-text:#991b1b;
+  --purple-bg:#ede9fe;--purple-text:#5b21b6;
+  --orange-bg:#fff7ed;--orange-text:#c2410c;
+  --bg:#f8fafc;--card:#fff;--border:#e2e8f0;
+  --text:#0f172a;--muted:#64748b;--light:#f1f5f9;
+  --safe-top:env(safe-area-inset-top,44px);
+  --safe-bottom:env(safe-area-inset-bottom,20px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text)}
+.app{display:flex;flex-direction:column;height:100%;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 6px;flex-shrink:0}
+.topbar-left .date{font-size:12px;color:var(--muted)}
+.topbar-left .title{font-size:18px;font-weight:700}
+.flame-pill{display:flex;align-items:center;gap:4px;background:#fff7ed;border:1px solid #fed7aa;border-radius:20px;padding:5px 12px;font-size:15px;font-weight:700;color:#c2410c}
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 14px 16px}
+.bottom-nav{display:flex;background:var(--card);border-top:1px solid var(--border);flex-shrink:0}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border:none;background:none;cursor:pointer;color:var(--muted);font-size:9px;font-family:inherit;transition:color .15s}
+.nav-btn.active{color:var(--green-dark)}
+.nav-btn svg{width:20px;height:20px}
+.tab{display:none}.tab.active{display:block}
+.card{background:var(--card);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:10px}
+.card-head{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.card-head-title{font-size:14px;font-weight:600}
+.card-body{padding:12px 14px}
+.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.b-run{background:var(--green-bg);color:var(--green-text)}
+.b-gym{background:var(--blue-bg);color:var(--blue-text)}
+.b-rest{background:var(--light);color:var(--muted)}
+.goal-card{background:linear-gradient(135deg,#0f172a,#1e3a5f);border-radius:18px;padding:18px;margin-bottom:10px;color:#fff}
+.goal-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px}
+.goal-kg{font-size:38px;font-weight:700;line-height:1}
+.goal-kg span{font-size:16px;opacity:.6}
+.goal-lbl{font-size:11px;opacity:.6;margin-top:2px}
+.goal-right{text-align:right}
+.goal-target{font-size:20px;font-weight:700;color:var(--green)}
+.progress-bg{height:5px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.progress-fill{height:100%;background:var(--green);border-radius:3px;transition:width .6s}
+.eta-row{display:flex;justify-content:space-between;align-items:center}
+.eta-main{font-size:12px;font-weight:600;color:var(--green)}
+.eta-pct{font-size:11px;opacity:.5}
+.phase-pill{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.phase-dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex-shrink:0}
+.phase-name{font-size:13px;font-weight:600}
+.phase-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.chevron{margin-left:auto;color:var(--muted);font-size:16px}
+/* GYM SECTIONS */
+.gym-section{margin-bottom:12px}
+.gym-section-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.gym-section-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
+.s-warmup{background:#fef3c7;color:#92400e}
+.s-muscle{background:#dbeafe;color:#1d4ed8}
+.s-cardio{background:#dcfce7;color:#15803d}
+.exercise-row{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.exercise-row:last-child{border-bottom:none}
+.ex-num{width:22px;height:22px;border-radius:50%;background:var(--blue-bg);color:var(--blue-text);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+.ex-name{font-size:13px;font-weight:600;color:var(--text)}
+.ex-detail{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4}
+.ex-sets{font-size:11px;font-weight:600;background:var(--light);color:var(--muted);padding:2px 7px;border-radius:6px;margin-top:4px;display:inline-block}
+.tapis-card{background:linear-gradient(135deg,#1e3a5f,#0f172a);border-radius:14px;padding:14px;margin-top:4px;color:#fff}
+.tapis-title{font-size:13px;font-weight:700;color:var(--green);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.tapis-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tapis-stat{text-align:center}
+.tapis-val{font-size:18px;font-weight:700}
+.tapis-lbl{font-size:10px;opacity:.6;margin-top:2px}
+.tapis-note{font-size:11px;opacity:.6;margin-top:10px;text-align:center}
+/* RUN */
+.prog-item{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border)}
+.prog-item:last-child{border-bottom:none;padding-bottom:0}
+.prog-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ico-run{background:var(--green-bg)}.ico-gym{background:var(--blue-bg)}.ico-rest{background:var(--light)}
+.prog-lbl{font-size:13px;font-weight:500}
+.prog-det{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4}
+.done-btn{display:block;width:100%;padding:13px;font-size:14px;font-weight:600;font-family:inherit;border:none;cursor:pointer;transition:all .15s;border-top:1px solid var(--border)}
+.done-btn.go{background:var(--green);color:#fff}
+.done-btn.go:active{background:var(--green-dark);transform:scale(.98)}
+.done-btn.did{background:var(--light);color:var(--muted);cursor:default}
+.meal-row{padding:9px 0;border-bottom:1px solid var(--border)}
+.meal-row:last-child{border-bottom:none}
+.meal-row.creatine-row{background:var(--purple-bg);margin:0 -14px;padding:9px 14px}
+.meal-t{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.meal-row.creatine-row .meal-t{color:var(--purple-text)}
+.meal-n{font-size:13px;margin-top:2px;line-height:1.4}
+.meal-k{font-size:11px;color:var(--muted);margin-top:3px}
+.macros{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.macro-pill{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;background:var(--light);color:var(--muted)}
+.macro-pill.prot{background:#dbeafe;color:#1d4ed8}
+.macro-pill.gluc{background:#dcfce7;color:#15803d}
+.macro-pill.lip{background:#fef3c7;color:#92400e}
+.stitle{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 7px}
+.reminder{background:var(--amber-bg);border-radius:12px;padding:11px 13px;margin-bottom:10px;display:flex;align-items:center;gap:9px;font-size:13px;color:var(--amber-text);font-weight:500}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:12px}
+.day-cell{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.day-lbl{font-size:9px;color:var(--muted)}
+.day-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;border:1.5px solid var(--border);background:var(--light);transition:transform .1s}
+.day-dot:active{transform:scale(.9)}
+.dd-run{background:var(--green-bg);border-color:var(--green)}
+.dd-gym{background:var(--blue-bg);border-color:#93c5fd}
+.dd-rest{background:var(--light)}
+.dd-today{border:2.5px solid var(--green)}
+.dd-future{opacity:.3}
+.wplan-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.wplan-row:last-child{border-bottom:none}
+.wplan-day{width:28px;font-size:11px;color:var(--muted)}
+.wplan-arrow{margin-left:auto;color:var(--muted);font-size:14px}
+.w-input-row{display:flex;gap:8px;margin-bottom:12px}
+.w-input-row input{flex:1;padding:11px 13px;font-size:16px;border:1.5px solid var(--border);border-radius:12px;background:var(--card);color:var(--text);font-family:inherit;-webkit-appearance:none}
+.w-input-row input:focus{outline:none;border-color:var(--green)}
+.w-input-row button{padding:11px 16px;border:none;border-radius:12px;background:var(--green);color:#fff;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
+.w-hist-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+.w-hist-row:last-child{border-bottom:none}
+.chart-wrap{width:100%;height:140px;position:relative;margin:4px 0 8px}
+canvas#wchart{width:100%!important;height:140px!important}
+.phase-block{border:1.5px solid var(--border);border-radius:14px;padding:11px 13px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+.phase-block.active-ph{border-color:var(--green);background:#f0fdf4}
+.phase-block-head{display:flex;align-items:center;gap:10px}
+.ph-circle{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0}
+.ph-circle.act{border-color:var(--green);background:var(--green);color:#fff}
+.ph-title{font-size:13px;font-weight:600;flex:1}
+.ph-body{margin-top:10px;display:none;border-top:1px solid var(--border);padding-top:10px}
+.ph-body.open{display:block}
+.ph-item{display:flex;gap:8px;padding:6px 0;font-size:12px;border-bottom:1px solid var(--border)}
+.ph-item:last-child{border-bottom:none}
+.ph-item-ico{width:22px;text-align:center;flex-shrink:0}
+.shop-day{margin-bottom:14px}
+.shop-day-title{font-size:13px;font-weight:600;margin-bottom:7px}
+.shop-item-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.shop-item-row:last-child{border-bottom:none}
+.shop-check{width:22px;height:22px;border-radius:7px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;font-size:13px}
+.shop-check.checked{background:var(--green);border-color:var(--green);color:#fff}
+.shop-name{font-size:13px;flex:1}
+.shop-qty{font-size:11px;color:var(--muted);white-space:nowrap}
+.food-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+.food-chip{display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;transition:all .15s;font-size:12px}
+.food-chip.liked{border-color:var(--green);background:var(--green-bg);color:var(--green-text)}
+.food-chip.disliked{border-color:var(--red);background:var(--red-bg);color:var(--red-text)}
+.food-chip-ico{font-size:16px;flex-shrink:0}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--card);border-radius:22px 22px 0 0;padding:20px 18px;padding-bottom:calc(20px + var(--safe-bottom));width:100%;max-height:90vh;overflow-y:auto;transform:translateY(40px);transition:transform .2s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-title-row{font-size:16px;font-weight:700;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{font-size:24px;color:var(--muted);cursor:pointer;padding:0 4px;line-height:1}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.stat-card{background:var(--light);border-radius:12px;padding:10px;text-align:center}
+.stat-val{font-size:20px;font-weight:700;color:var(--text)}
+.stat-lbl{font-size:10px;color:var(--muted);margin-top:2px}
+.tip-card{background:var(--purple-bg);border-radius:12px;padding:11px 13px;margin-bottom:10px;font-size:12px;color:var(--purple-text);line-height:1.5}
+.tip-card strong{font-weight:600}
+.week-meals-nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;-webkit-overflow-scrolling:touch}
+.week-meals-nav::-webkit-scrollbar{display:none}
+.wmn-btn{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap;font-family:inherit}
+.wmn-btn.active{border-color:var(--green);background:var(--green-bg);color:var(--green-text)}
+/* PROTEIN BAR */
+.prot-bar-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.prot-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.prot-bar-title{font-size:13px;font-weight:600}
+.prot-bar-val{font-size:13px;font-weight:700;color:var(--blue-text)}
+.prot-bar-bg{height:8px;background:var(--light);border-radius:4px;overflow:hidden}
+.prot-bar-fill{height:100%;background:var(--blue);border-radius:4px;transition:width .4s}
+/* HYDRATION */
+.hydra-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.hydra-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.hydra-title{font-size:13px;font-weight:600}
+.hydra-count{font-size:13px;font-weight:700;color:var(--blue-text)}
+.hydra-row{display:flex;gap:6px;flex-wrap:wrap}
+.water-btn{width:34px;height:34px;border-radius:50%;border:2px solid var(--blue-bg);background:var(--card);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.water-btn.filled{background:var(--blue-bg);border-color:var(--blue)}
+/* MEAL CHECK */
+.meal-row-inner{display:flex;align-items:flex-start;gap:8px}
+.meal-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;flex-shrink:0;margin-top:2px;transition:all .15s}
+.meal-check.checked{background:var(--green);border-color:var(--green);color:#fff}
+.meal-done .meal-n{text-decoration:line-through;opacity:.5}
+/* QUICK MEALS */
+.quick-meal{background:#ccfbf1;border-radius:12px;padding:10px 13px;margin-bottom:6px;font-size:12px;color:#0f766e}
+.quick-meal strong{font-weight:600;display:block;margin-bottom:3px}
+/* TIRED MODE */
+.tired-btn{display:block;width:100%;padding:10px;font-size:13px;font-weight:500;font-family:inherit;border:none;background:var(--amber-bg);color:var(--amber-text);cursor:pointer;border-top:1px solid var(--border)}
+/* BADGES */
+.badges-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.badge-item{border-radius:14px;padding:12px 8px;text-align:center;border:1.5px solid var(--border);background:var(--light)}
+.badge-item.unlocked{background:var(--amber-bg);border-color:#fed7aa}
+.badge-item.locked .badge-ico{filter:grayscale(1);opacity:.35}
+.badge-item.locked .badge-name{color:var(--muted)}
+.badge-ico{font-size:26px;margin-bottom:5px}
+.badge-name{font-size:11px;font-weight:600;line-height:1.3}
+.badge-desc{font-size:10px;color:var(--muted);margin-top:2px}
+/* CORPS TAB */
+.meas-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.meas-item{background:var(--light);border-radius:12px;padding:10px 12px}
+.meas-label{font-size:11px;color:var(--muted);margin-bottom:4px}
+.meas-val{font-size:18px;font-weight:700}
+.meas-diff{font-size:11px;margin-top:2px}
+.meas-input-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.meas-input-wrap{display:flex;flex-direction:column;gap:4px}
+.meas-input-wrap label{font-size:11px;color:var(--muted);font-weight:500}
+.meas-input-wrap input{padding:9px 12px;font-size:14px;border:1.5px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);font-family:inherit;-webkit-appearance:none;width:100%}
+.strength-item{padding:9px 0;border-bottom:1px solid var(--border)}
+.strength-item:last-child{border-bottom:none}
+.strength-name{font-size:13px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.strength-best{font-size:16px;font-weight:700;color:var(--blue-text)}
+.strength-hist{font-size:11px;color:var(--muted);margin-top:3px}
+.strength-add{display:flex;gap:6px;margin-top:6px}
+.strength-add input{flex:1;padding:7px 10px;font-size:13px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-family:inherit;-webkit-appearance:none}
+.strength-add button{padding:7px 12px;border:none;border-radius:8px;background:var(--blue);color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer}
+/* TIMER OVERLAY */
+.timer-overlay{position:fixed;inset:0;background:rgba(15,23,42,.96);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.timer-overlay.open{opacity:1;pointer-events:all}
+.timer-circle{position:relative;width:180px;height:180px;margin-bottom:12px}
+.timer-circle svg{transform:rotate(-90deg)}
+.timer-display{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:44px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
+.timer-label{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:6px}
+.timer-exercise{font-size:15px;color:rgba(255,255,255,.85);font-weight:500;margin-bottom:28px;text-align:center;padding:0 20px}
+.timer-btns{display:flex;gap:10px}
+.t-btn-main{padding:13px 28px;border-radius:50px;border:none;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+.t-btn-go{background:var(--green);color:#fff}
+.t-btn-pause{background:#f97316;color:#fff}
+.t-btn-close{padding:13px 22px;border-radius:50px;border:2px solid rgba(255,255,255,.3);background:none;color:#fff;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
+/* EX FOOTER */
+.ex-footer{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.ex-timer-btn{font-size:11px;padding:3px 9px;border-radius:8px;border:1.5px solid var(--orange-text);color:var(--orange-text);background:none;cursor:pointer;font-family:inherit;font-weight:600}
+.ex-log-btn{font-size:11px;padding:3px 9px;border-radius:8px;border:1.5px solid var(--blue-text);color:var(--blue-text);background:none;cursor:pointer;font-family:inherit;font-weight:600}
+.ex-yt-btn{font-size:11px;padding:3px 9px;border-radius:8px;border:1.5px solid var(--muted);color:var(--muted);background:none;cursor:pointer;font-family:inherit}
+.ex-logged{font-size:11px;color:var(--green-text);font-weight:600}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="date" id="date-str"></div>
+      <div class="title">Mon Coach 💪</div>
+    </div>
+    <div class="flame-pill" id="flame-pill">🔥 <span id="streak-num">0</span></div>
+  </div>
+  <div class="scroll-area">
+    <div class="tab active" id="tab-today"></div>
+    <div class="tab" id="tab-week"></div>
+    <div class="tab" id="tab-prog"></div>
+    <div class="tab" id="tab-poids"></div>
+    <div class="tab" id="tab-courses"></div>
+    <div class="tab" id="tab-corps"></div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="showTab('today',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      Aujourd'hui
+    </button>
+    <button class="nav-btn" onclick="showTab('week',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Semaine
+    </button>
+    <button class="nav-btn" onclick="showTab('prog',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-6"/></svg>
+      Programme
+    </button>
+    <button class="nav-btn" onclick="showTab('corps',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/><path d="M12 8v4m0 0-3 3m3-3 3 3"/><path d="M9 22v-4l-2-2m8 6v-4l2-2"/></svg>
+      Corps
+    </button>
+    <button class="nav-btn" onclick="showTab('poids',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20v-2a8 8 0 0 1 16 0v2"/></svg>
+      Poids
+    </button>
+    <button class="nav-btn" onclick="showTab('courses',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Courses
+    </button>
+  </div>
+</div>
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-title-row"><span id="modal-title">Détail</span><span class="modal-close" onclick="closeModal()">×</span></div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- TIMER -->
+<div class="timer-overlay" id="timer-overlay">
+  <div class="timer-circle">
+    <svg width="180" height="180" viewBox="0 0 180 180">
+      <circle cx="90" cy="90" r="80" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="7"/>
+      <circle id="timer-arc" cx="90" cy="90" r="80" fill="none" stroke="#22c55e" stroke-width="7" stroke-dasharray="502" stroke-dashoffset="0" stroke-linecap="round"/>
+    </svg>
+    <div class="timer-display" id="timer-display">1:30</div>
+  </div>
+  <div class="timer-label">Temps de repos</div>
+  <div class="timer-exercise" id="timer-exercise"></div>
+  <div class="timer-btns">
+    <button class="t-btn-main t-btn-go" id="t-start" onclick="toggleTimer()">▶ Démarrer</button>
+    <button class="t-btn-close" onclick="closeTimer()">Fermer</button>
+  </div>
+</div>
+
+<script>
+const DAYS_S=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+const DAYS_L=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+const MONTHS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+
+const SCHED=[
+  {type:'rest',label:'Repos / Motocross'},
+  {type:'run',label:'Course à pied'},
+  {type:'gym',label:'Salle de sport'},
+  {type:'run',label:'Course à pied'},
+  {type:'gym',label:'Salle de sport'},
+  {type:'run',label:'Course à pied'},
+  {type:'rest',label:'Repos actif'}
+];
+
+const PHASES=[
+  {name:'Phase 1 — Réveil',weeks:'Semaines 1–3',desc:'Remise en route progressive.',details:[
+    {ico:'🎯',t:'Objectif',d:'Retrouver les automatismes sportifs sans se blesser'},
+    {ico:'🏋️',t:'Salle',d:'Charges légères à modérées, technique parfaite, 3 séries. Séances de 1h30.'},
+    {ico:'🏃',t:'Course',d:'Intervalles marche/course, max 4 km, allure confortable'},
+    {ico:'🥗',t:'Nutrition',d:'~1500 kcal/j, priorité protéines (1,6g/kg)'},
+    {ico:'📉',t:'Perte estimée',d:'0,3 à 0,5 kg par semaine'},
+  ]},
+  {name:'Phase 2 — Fondation',weeks:'Semaines 4–6',desc:'Le corps s\'adapte, on monte le volume.',details:[
+    {ico:'🎯',t:'Objectif',d:'Base musculaire solide + cardio qui progresse'},
+    {ico:'🏋️',t:'Salle',d:'Hypertrophie : 4 séries, charges moyennes-lourdes, 10–12 reps'},
+    {ico:'🏃',t:'Course',d:'5–6 km tempo, fractionné 6×3 min'},
+    {ico:'🥗',t:'Nutrition',d:'~1400 kcal/j, glucides autour des séances'},
+    {ico:'📉',t:'Perte estimée',d:'0,4 à 0,6 kg par semaine'},
+  ]},
+  {name:'Phase 3 — Construction',weeks:'Semaines 7–10',desc:'Intensité max. Muscle + fonte en simultané.',details:[
+    {ico:'🎯',t:'Objectif',d:'Prise de muscle sèche, brûlage intensif des graisses'},
+    {ico:'🏋️',t:'Salle',d:'Force + hypertrophie : charges lourdes, supersets, finishers'},
+    {ico:'🏃',t:'Course',d:'HIIT, fractionné intense, 6–7 km'},
+    {ico:'🥗',t:'Nutrition',d:'~1350 kcal/j, protéines très hautes (1,8g/kg)'},
+    {ico:'📉',t:'Perte estimée',d:'0,5 à 0,7 kg par semaine'},
+  ]},
+  {name:'Phase 4 — Définition',weeks:'Semaines 11–16+',desc:'Objectif final : 80 kg musclée et sèche.',details:[
+    {ico:'🎯',t:'Objectif',d:'Perdre les derniers kilos, garder le muscle'},
+    {ico:'🏋️',t:'Salle',d:'Circuit training intensif, volume élevé, supersets'},
+    {ico:'🏃',t:'Course',d:'Long runs 8 km+, HIIT très intense'},
+    {ico:'🥗',t:'Nutrition',d:'~1300 kcal/j, glucides très bas hors séances'},
+    {ico:'📉',t:'Perte estimée',d:'0,3 à 0,5 kg par semaine'},
+  ]}
+];
+
+// ─── GYM PROGRAMS 1h30 ───────────────────────────────────────
+// Structure: phase[0-3] → semaine_dans_phase[0-2] → session[0-1]
+// 2 sessions gym/semaine alternées
+
+const GYM_SESSIONS = [
+  // PHASE 1 — RÉVEIL (semaines 1-3, 3 variantes de semaine)
+  [
+    // Semaine 1
+    [
+      { // Session A - Bas du corps
+        name: 'Séance A — Bas du corps',
+        warmup: [{n:'Vélo elliptique',d:'10 min niveau 5, montée progressive',sets:'10 min'}],
+        muscle: [
+          {n:'Squat barre guidée',d:'Pieds largeur épaules, descendre jusqu\'aux cuisses parallèles au sol',sets:'3 × 15 reps · 60% RM · repos 90 sec'},
+          {n:'Leg press machine',d:'Pieds hauts et écartés pour cibler fessiers, amplitude complète',sets:'3 × 15 reps · charge modérée · repos 90 sec'},
+          {n:'Fentes marchées haltères',d:'Grand pas en avant, genou arrière frôle le sol, tronc droit',sets:'3 × 12 reps/jambe · haltères légers · repos 90 sec'},
+          {n:'Leg curl couché',d:'Contrôle de la descente, pause 1 sec en haut',sets:'3 × 15 reps · repos 60 sec'},
+          {n:'Hip thrust barre',d:'Dos sur le banc, poussée explosive des hanches vers le haut',sets:'3 × 15 reps · charge légère · repos 90 sec'},
+          {n:'Mollets debout machine',d:'Amplitude maximale, pause 2 sec en haut',sets:'3 × 20 reps · repos 60 sec'},
+        ],
+        finisher: {mins:30,speed:6,incline:15,note:'Marche inclinée 15% · 6 km/h · 30 min · brûle ~250 kcal'}
+      },
+      { // Session B - Haut du corps
+        name: 'Séance B — Haut du corps',
+        warmup: [{n:'Rameur',d:'10 min allure modérée, travail cardio léger',sets:'10 min'}],
+        muscle: [
+          {n:'Tirage horizontal câble',d:'Coudes le long du corps, omoplates serrées en fin de mouvement',sets:'3 × 15 reps · charge modérée · repos 90 sec'},
+          {n:'Développé incliné haltères',d:'Angle 30–45°, descente contrôlée jusqu\'à la poitrine',sets:'3 × 15 reps · haltères légers · repos 90 sec'},
+          {n:'Rowing haltère 1 bras',d:'Appui sur le banc, tirage jusqu\'à la hanche, coude haut',sets:'3 × 15 reps/côté · repos 90 sec'},
+          {n:'Élévations latérales haltères',d:'Légère flexion du coude, monter jusqu\'à hauteur d\'épaule',sets:'3 × 15 reps · léger · repos 60 sec'},
+          {n:'Curl biceps barre EZ',d:'Coudes fixes contre les côtes, montée et descente contrôlées',sets:'3 × 15 reps · repos 60 sec'},
+          {n:'Extensions triceps poulie haute',d:'Coudes serrés, extension complète, pause en bas',sets:'3 × 15 reps · repos 60 sec'},
+          {n:'Gainage planche',d:'Corps droit, respiration normale, pas de compensation lombaire',sets:'3 × 45 sec · repos 45 sec'},
+        ],
+        finisher: {mins:30,speed:6,incline:15,note:'Marche inclinée 15% · 6 km/h · 30 min · brûle ~250 kcal'}
+      }
+    ],
+    // Semaine 2
+    [
+      { // Session A - Bas
+        name: 'Séance A — Bas du corps',
+        warmup: [{n:'Vélo stationnaire',d:'10 min niveau 6, cadence 70-80 rpm',sets:'10 min'}],
+        muscle: [
+          {n:'Squat barre guidée',d:'Légère augmentation des charges vs semaine 1',sets:'3 × 12 reps · 65% RM · repos 90 sec'},
+          {n:'Leg press machine',d:'Réduire amplitude en fin de set si nécessaire',sets:'3 × 12 reps · + charge · repos 90 sec'},
+          {n:'Fentes bulgares haltères',d:'Pied arrière surélevé sur banc, descente lente 3 sec',sets:'3 × 10 reps/jambe · repos 2 min'},
+          {n:'Leg curl assis',d:'Variation par rapport à la semaine précédente',sets:'3 × 12 reps · repos 60 sec'},
+          {n:'Hip thrust barre',d:'Augmenter légèrement la charge',sets:'3 × 12 reps · repos 90 sec'},
+          {n:'Good morning haltères',d:'Léger fléchissement genoux, buste descend parallèle au sol',sets:'3 × 12 reps · très léger · repos 90 sec'},
+        ],
+        finisher: {mins:30,speed:6,incline:15,note:'Marche inclinée 15% · 6 km/h · 30 min'}
+      },
+      {
+        name: 'Séance B — Haut du corps',
+        warmup: [{n:'Vélo elliptique',d:'10 min, légère résistance',sets:'10 min'}],
+        muscle: [
+          {n:'Tirage vertical poulie haute',d:'Prise large, tirer jusqu\'au menton, contrôle de la remontée',sets:'3 × 12 reps · repos 90 sec'},
+          {n:'Développé couché haltères',d:'Descente jusqu\'à étirement pectoral, poussée explosive',sets:'3 × 12 reps · repos 90 sec'},
+          {n:'Rowing barre penché',d:'Dos droit, barre tirée vers le nombril, coudes hauts',sets:'3 × 12 reps · charge légère · repos 90 sec'},
+          {n:'Presse épaules machine',d:'Amplitude complète, pas de verrouillage des coudes en haut',sets:'3 × 12 reps · repos 90 sec'},
+          {n:'Curl haltères alternés',d:'Rotation du poignet en montant (supination)',sets:'3 × 12 reps/bras · repos 60 sec'},
+          {n:'Dips banc',d:'Mains sur le banc, pieds tendus, descente complète',sets:'3 × 15 reps · repos 60 sec'},
+          {n:'Crunchs abdos',d:'Mouvement court, contraction en haut, pas d\'élan',sets:'3 × 20 reps · repos 45 sec'},
+        ],
+        finisher: {mins:30,speed:6,incline:15,note:'Marche inclinée 15% · 6 km/h · 30 min'}
+      }
+    ],
+    // Semaine 3
+    [
+      {
+        name: 'Séance A — Bas du corps',
+        warmup: [{n:'Rameur',d:'10 min, rythme régulier 20-22 coups/min',sets:'10 min'}],
+        muscle: [
+          {n:'Squat barre guidée',d:'Dernier set de la phase 1, charges les plus lourdes testées',sets:'4 × 10 reps · 70% RM · repos 2 min'},
+          {n:'Leg press machine',d:'Augmentation charge, amplitude complète impérative',sets:'4 × 10 reps · repos 2 min'},
+          {n:'Fentes marchées haltères',d:'Augmenter les haltères par rapport à la semaine 1',sets:'3 × 10 reps/jambe · repos 2 min'},
+          {n:'Leg extension machine',d:'Contraction maximale en haut, descente lente 3 sec',sets:'3 × 15 reps · repos 60 sec'},
+          {n:'Hip thrust barre',d:'Charges lourdes, squeeze des fessiers 2 sec en haut',sets:'4 × 12 reps · repos 2 min'},
+          {n:'Mollets presse',d:'Orteils sur le bord, amplitude maximale',sets:'3 × 20 reps · repos 60 sec'},
+        ],
+        finisher: {mins:30,speed:6.5,incline:15,note:'Marche inclinée 15% · 6,5 km/h · 30 min · progression vitesse'}
+      },
+      {
+        name: 'Séance B — Haut + Core',
+        warmup: [{n:'Vélo stationnaire',d:'10 min niveau 7',sets:'10 min'}],
+        muscle: [
+          {n:'Tractions machine assistée',d:'Prise large, descente complète, tirer omoplates ensemble',sets:'4 × 8-10 reps · repos 2 min'},
+          {n:'Développé incliné barre',d:'Introduction barre, charge légère, technique impeccable',sets:'4 × 10 reps · repos 2 min'},
+          {n:'Rowing machine',d:'Dos droit, tirer les poignées vers le nombril',sets:'3 × 12 reps · repos 90 sec'},
+          {n:'Face pull câble',d:'Corde à hauteur visage, tirer jusqu\'aux oreilles, coudes hauts',sets:'3 × 15 reps · repos 60 sec'},
+          {n:'Curl barre EZ + Extensions triceps',d:'Superset : enchaîner sans repos entre les 2',sets:'3 × 12+12 · repos 90 sec entre supersets'},
+          {n:'Gainage dynamique',d:'Planche + montée genoux alternés (mountain climbers lents)',sets:'3 × 40 sec · repos 45 sec'},
+          {n:'Relevés de jambes suspendu',d:'Barres parallèles, genoux à la poitrine ou jambes tendues',sets:'3 × 12 reps · repos 60 sec'},
+        ],
+        finisher: {mins:30,speed:6.5,incline:15,note:'Marche inclinée 15% · 6,5 km/h · 30 min'}
+      }
+    ]
+  ],
+  // PHASE 2 — FONDATION (semaines 4-6)
+  [
+    // Semaine 4
+    [
+      {
+        name: 'Séance A — Jambes & Fessiers',
+        warmup: [{n:'Vélo stationnaire',d:'10 min niveaux 6→8, montée progressive',sets:'10 min'}],
+        muscle: [
+          {n:'Squat barre libre',d:'Transition vers barre libre. Pieds 1,5× largeur épaules, orteils légèrement ouverts',sets:'4 × 10 reps · 70% RM · repos 2 min'},
+          {n:'Leg press 45°',d:'Pieds hauts-larges (fessiers) puis bas-serrés (quadriceps) · alterner les positions',sets:'4 × 12 reps · repos 2 min'},
+          {n:'Fentes bulgares barre',d:'Introduction barre dans le cou, amplitude maximale, tronc vertical',sets:'4 × 8 reps/jambe · repos 2 min'},
+          {n:'Leg curl couché',d:'Contraction maximale, descente sur 3 secondes',sets:'4 × 12 reps · repos 90 sec'},
+          {n:'Hip thrust barre chargée',d:'Barre sur les hanches avec protection, amplitude maximale',sets:'4 × 12 reps · repos 2 min'},
+          {n:'Abduction hanche machine',d:'Mouvement lent et contrôlé, contraction 1 sec en fin',sets:'3 × 20 reps · repos 60 sec'},
+          {n:'Mollets debout barre',d:'Barre sur les épaules, amplitude totale, pause en bas',sets:'3 × 20 reps · repos 60 sec'},
+        ],
+        finisher: {mins:30,speed:6.5,incline:15,note:'Marche inclinée 15% · 6,5 km/h · 30 min'}
+      },
+      {
+        name: 'Séance B — Dos & Épaules',
+        warmup: [{n:'Rameur',d:'10 min à 22-24 coups/min, résistance modérée',sets:'10 min'}],
+        muscle: [
+          {n:'Tractions assistées',d:'Prise large, corps droit, descente complète, montée explosive',sets:'4 × 8 reps · repos 2 min'},
+          {n:'Rowing barre penché',d:'Dos parallèle au sol, barre tirée vers le nombril',sets:'4 × 10 reps · repos 2 min'},
+          {n:'Tirage horizontal câble',d:'Prise neutre, coudes en arrière, omoplates en contact',sets:'3 × 12 reps · repos 90 sec'},
+          {n:'Développé militaire barre',d:'Debout ou assis, barre descendue sous le menton',sets:'4 × 10 reps · repos 2 min'},
+          {n:'Élévations latérales cables',d:'1 bras à la fois, câble passant devant le corps',sets:'3 × 15 reps/bras · repos 60 sec'},
+          {n:'Oiseau haltères (arrière épaules)',d:'Penché à 45°, haltères légers, mouvement d\'arc',sets:'3 × 15 reps · repos 60 sec'},
+          {n:'Planche + rotations latérales',d:'Planche sur les coudes, rotation du buste alternée',sets:'3 × 30 sec · repos 45 sec'},
+        ],
+        finisher: {mins:30,speed:6.5,incline:15,note:'Marche inclinée 15% · 6,5 km/h · 30 min'}
+      }
+    ],
+    // Semaine 5
+    [
+      {
+        name: 'Séance A — Full legs intensif',
+        warmup: [{n:'Vélo stationnaire',d:'10 min niveaux 7→9',sets:'10 min'}],
+        muscle: [
+          {n:'Squat barre libre',d:'Augmentation charge +5%, focalisation sur profondeur',sets:'4 × 8 reps · 75% RM · repos 2 min'},
+          {n:'Leg press 45°',d:'3 séries pieds hauts-larges + 1 série drop-set final',sets:'4 × 10 + 1 drop · repos 2 min'},
+          {n:'Fentes bulgares barre',d:'Augmentation charge, tempo 3-1-1 (descente-pause-montée)',sets:'4 × 8 reps/jambe · repos 2 min'},
+          {n:'Soulevé de terre roumain',d:'Introduction RDL, charges légères, focus sur étirement ischio',sets:'4 × 10 reps · repos 2 min'},
+          {n:'Hip thrust barre',d:'Charges lourdes, 2 sec de contraction en haut',sets:'4 × 10 reps · repos 2 min'},
+          {n:'Leg extension + Leg curl Superset',d:'Enchaîner directement les 2 machines, pas de repos entre',sets:'3 × 12+12 · repos 2 min entre supersets'},
+          {n:'Mollets debout + assis Superset',d:'Machine debout puis assis, 0 repos entre les 2',sets:'3 × 15+20 · repos 90 sec'},
+        ],
+        finisher: {mins:30,speed:7,incline:15,note:'Marche inclinée 15% · 7 km/h · 30 min · progression vitesse'}
+      },
+      {
+        name: 'Séance B — Pectoraux & Biceps',
+        warmup: [{n:'Vélo elliptique',d:'10 min résistance 8',sets:'10 min'}],
+        muscle: [
+          {n:'Développé couché barre',d:'Prise légèrement plus large que les épaules, descente touche poitrine',sets:'4 × 8 reps · 70% RM · repos 2 min'},
+          {n:'Développé incliné haltères',d:'Angle 30°, descente profonde, rotation neutre en bas',sets:'4 × 10 reps · repos 2 min'},
+          {n:'Écarté câbles croisés bas',d:'Câbles en bas, mouvement d\'arc vers le haut, focus pectoraux hauts',sets:'3 × 15 reps · repos 90 sec'},
+          {n:'Curl barre EZ',d:'Coudes fixes, montée 2 sec, descente 3 sec',sets:'4 × 10 reps · repos 90 sec'},
+          {n:'Curl incliné haltères',d:'Allongé sur banc incliné, bras tendus, rotation supination',sets:'3 × 12 reps · repos 90 sec'},
+          {n:'Curl marteau alternés',d:'Prise neutre, mouvement de marteau, épaule fixe',sets:'3 × 12 reps/bras · repos 60 sec'},
+          {n:'Crunchs obliques',d:'Mains derrière la tête, rotation pour toucher genou opposé',sets:'3 × 20 reps/côté · repos 45 sec'},
+        ],
+        finisher: {mins:30,speed:7,incline:15,note:'Marche inclinée 15% · 7 km/h · 30 min'}
+      }
+    ],
+    // Semaine 6
+    [
+      {
+        name: 'Séance A — Jambes (intensité max phase 2)',
+        warmup: [{n:'Rameur',d:'10 min puissance modérée, 24 coups/min',sets:'10 min'}],
+        muscle: [
+          {n:'Squat barre libre',d:'Charges maximales de la phase 2',sets:'5 × 6 reps · 80% RM · repos 2-3 min'},
+          {n:'Leg press 45° + Squat sauté',d:'Superset : leg press lourd puis 10 squats sautés corps seul',sets:'3 × 10 + 10 · repos 2 min'},
+          {n:'Fentes marchées barre',d:'En se déplaçant dans la salle, 20 pas total',sets:'3 × 20 pas · repos 2 min'},
+          {n:'Soulevé de terre roumain',d:'Charges + par rapport à semaine 5',sets:'4 × 8 reps · repos 2 min'},
+          {n:'Hip thrust barre lourd',d:'Charges maximales, bascule de bassin complète',sets:'4 × 8 reps · repos 2 min'},
+          {n:'Abduction + Adduction machine',d:'Superset abduction et adduction, focus intérieur et extérieur cuisse',sets:'3 × 20+20 · repos 90 sec'},
+          {n:'Chaise romaine (hyperextension)',d:'Corps poids seul, focus bas du dos et fessiers',sets:'3 × 15 reps · repos 60 sec'},
+        ],
+        finisher: {mins:30,speed:7,incline:15,note:'Marche inclinée 15% · 7 km/h · 30 min'}
+      },
+      {
+        name: 'Séance B — Dos complet & Triceps',
+        warmup: [{n:'Vélo stationnaire',d:'10 min niveaux 7→10, warm-up intense',sets:'10 min'}],
+        muscle: [
+          {n:'Tractions lestées ou assistées',d:'Charge adaptée pour faire exactement 8 reps propres',sets:'4 × 8 reps · repos 2-3 min'},
+          {n:'Rowing barre penché lourd',d:'Charges maximales phase 2, focus dos large',sets:'4 × 8 reps · repos 2 min'},
+          {n:'Tirage horizontal prise neutre',d:'Coudes collés au corps, squeeze long',sets:'4 × 10 reps · repos 90 sec'},
+          {n:'Développé militaire haltères',d:'Assis, haltères aux oreilles, pousser en arc au-dessus',sets:'4 × 10 reps · repos 2 min'},
+          {n:'Extensions triceps barre EZ (skull crushers)',d:'Allongé, barre EZ vers le front, coudes fixes',sets:'4 × 10 reps · repos 90 sec'},
+          {n:'Kickbacks triceps câble',d:'Penché, bras parallèle au sol, extension complète',sets:'3 × 15 reps · repos 60 sec'},
+          {n:'Planche + relevés de hanches',d:'Planche sur coudes, lever et descendre les hanches',sets:'3 × 12 reps · repos 60 sec'},
+        ],
+        finisher: {mins:30,speed:7,incline:15,note:'Marche inclinée 15% · 7 km/h · 30 min'}
+      }
+    ]
+  ],
+  // PHASE 3 — CONSTRUCTION (semaines 7-10)
+  [
+    // Semaine 7
+    [
+      {
+        name: 'Séance A — Force Jambes',
+        warmup: [{n:'Vélo stationnaire',d:'10 min niveaux 8→12',sets:'10 min'}],
+        muscle: [
+          {n:'Squat barre libre lourd',d:'Focus force brute, spotting recommandé',sets:'5 × 5 reps · 85% RM · repos 3 min'},
+          {n:'Leg press 45° chargé',d:'Charges lourdes, 6-8 reps, tempo lent descendant',sets:'4 × 8 reps · repos 2-3 min'},
+          {n:'Fentes bulgares barre + saut',d:'Descente lente 3 sec, remontée explosive avec saut',sets:'3 × 6 reps/jambe · repos 2 min'},
+          {n:'Soulevé de terre roumain lourd',d:'Charges progressivement lourdes, dos toujours droit',sets:'4 × 8 reps · repos 2-3 min'},
+          {n:'Hip thrust barre MAX',d:'Charges maximales personnelles, contraction longue',sets:'5 × 6 reps · repos 2-3 min'},
+          {n:'Leg press drop-set',d:'1 série à l\'épuisement · retirer 20% charge · continuer · retirer · continuer',sets:'1 drop-set triple · repos 3 min'},
+          {n:'Mollets debout MAX',d:'Charges maximales, 5 sec de descente',sets:'4 × 12 reps · repos 90 sec'},
+        ],
+        finisher: {mins:30,speed:7.5,incline:15,note:'Marche inclinée 15% · 7,5 km/h · 30 min · intensité haute'}
+      },
+      {
+        name: 'Séance B — Force Haut + Supersets',
+        warmup: [{n:'Rameur',d:'10 min puissance haute, 26 coups/min',sets:'10 min'}],
+        muscle: [
+          {n:'Développé couché barre LOURD',d:'Charges maximales, 5 reps propres, spotter si possible',sets:'5 × 5 reps · 85% RM · repos 3 min'},
+          {n:'Tractions lestées',d:'Lest ceinture ou gilet, descente complète',sets:'4 × 6 reps · repos 3 min'},
+          {n:'Rowing barre lourd',d:'Charges maximales phase 3',sets:'4 × 6 reps · repos 3 min'},
+          {n:'Développé militaire barre DEBOUT',d:'Gainage abdominal fort, pas de cambrure lombaire',sets:'4 × 8 reps · repos 2 min'},
+          {n:'Superset Curl barre + Extensions triceps',d:'Curl barre EZ 10 reps puis skull crushers 10 reps · 0 repos entre',sets:'4 × 10+10 · repos 2 min'},
+          {n:'Superset Écarté câbles + Face pull',d:'Pectoraux 12 reps puis arrière épaules 15 reps',sets:'3 × 12+15 · repos 90 sec'},
+          {n:'Core circuit',d:'Planche 1 min + relevés jambes 15 reps + rotations 20 reps · enchaîner',sets:'3 rounds · repos 90 sec'},
+        ],
+        finisher: {mins:30,speed:7.5,incline:15,note:'Marche inclinée 15% · 7,5 km/h · 30 min'}
+      }
+    ],
+    // Semaine 8
+    [
+      {
+        name: 'Séance A — Hypertrophie Jambes',
+        warmup: [{n:'Vélo stationnaire',d:'10 min niveaux 8→13',sets:'10 min'}],
+        muscle: [
+          {n:'Squat barre + Squat sauté Superset',d:'Squat lourd 8 reps puis sauter 8 fois corps seul · explosivité',sets:'4 × 8+8 · repos 2 min'},
+          {n:'Leg press unilatéral',d:'1 jambe à la fois, charge = 60% de la charge habituelle bilatéral',sets:'3 × 12 reps/jambe · repos 2 min'},
+          {n:'Fentes bulgares haltères lourds',d:'Haltères maxs, tempo 3-0-1',sets:'4 × 8 reps/jambe · repos 2 min'},
+          {n:'Soulevé de terre jambes tendues',d:'Variation RDL, jambes quasi tendues, étirement maximum',sets:'4 × 10 reps · repos 2 min'},
+          {n:'Hip thrust barre + Abduction',d:'Superset : hip thrust 10 reps puis abduction 15 reps',sets:'3 × 10+15 · repos 2 min'},
+          {n:'Pistol squat assisté',d:'1 jambe, TRX ou barre pour l\'équilibre, ampliture max',sets:'3 × 8 reps/jambe · repos 2 min'},
+          {n:'Mollets assis machine',d:'Cibler le soléaire (mollet profond), amplitude totale',sets:'4 × 20 reps · repos 90 sec'},
+        ],
+        finisher: {mins:30,speed:7.5,incline:15,note:'Marche inclinée 15% · 7,5 km/h · 30 min'}
+      },
+      {
+        name: 'Séance B — Dos & Pecs Hypertrophie',
+        warmup: [{n:'Vélo elliptique',d:'10 min résistance haute',sets:'10 min'}],
+        muscle: [
+          {n:'Tractions prise serrée + large',d:'2 séries prise large / 2 séries prise serrée (sous-marine)',sets:'4 × 8 reps · repos 2 min'},
+          {n:'Développé couché + Écarté Superset',d:'Développé haltères 10 reps puis écarté 12 reps · 0 repos entre',sets:'4 × 10+12 · repos 2 min'},
+          {n:'Rowing 1 bras haltère lourd',d:'Dos horizontal, tirer jusqu\'à la hanche, rotation finale',sets:'4 × 8 reps/côté · repos 90 sec'},
+          {n:'Écarté incliné haltères',d:'Banc à 30°, amplitude profonde, étirement pectoral max',sets:'3 × 12 reps · repos 90 sec'},
+          {n:'Tirage vertical prise neutre serrée',d:'Poulie haute, prise à V, tirer jusqu\'au sternum',sets:'4 × 10 reps · repos 90 sec'},
+          {n:'Développé militaire haltères + Élévations',d:'Press 10 reps puis élévations latérales 12 reps · Superset',sets:'3 × 10+12 · repos 90 sec'},
+          {n:'Gainage rotatoire + Dragon flag',d:'Planche rotation 30 sec puis dragon flag 8 reps (genoux fléchis ok)',sets:'3 rounds · repos 90 sec'},
+        ],
+        finisher: {mins:30,speed:7.5,incline:15,note:'Marche inclinée 15% · 7,5 km/h · 30 min'}
+      }
+    ],
+    // Semaines 9-10 (index 2)
+    [
+      {
+        name: 'Séance A — Force-Hypertrophie Jambes',
+        warmup: [{n:'Rameur',d:'10 min intensité haute 28 coups/min',sets:'10 min'}],
+        muscle: [
+          {n:'Squat barre MAX',d:'Charges personnelles maximales, 3 reps parfaites',sets:'5 × 3 reps · 90% RM · repos 3-4 min'},
+          {n:'Leg press 45° volume',d:'Après le squat lourd : légèrement moins lourd mais 15 reps',sets:'3 × 15 reps · repos 2 min'},
+          {n:'Fentes marchées charges lourdes',d:'Haltères ou barre, 30 pas continus',sets:'3 × 30 pas · repos 2-3 min'},
+          {n:'Hip thrust maximum',d:'Charges records personnelles',sets:'5 × 5 reps · repos 3 min'},
+          {n:'Soulevé de terre roumain',d:'Charges lourdes, contrôle parfait',sets:'4 × 8 reps · repos 2 min'},
+          {n:'Circuit jambes finisher',d:'Squat 20 reps + fentes 20 reps + squat sauté 10 reps · corps seul',sets:'2 rounds · repos 2 min'},
+          {n:'Mollets supersets debout+assis',d:'Enchaîner sans repos les 2 positions',sets:'4 × 15+20 · repos 90 sec'},
+        ],
+        finisher: {mins:30,speed:8,incline:15,note:'Marche inclinée 15% · 8 km/h · 30 min · MAX vitesse phase 3'}
+      },
+      {
+        name: 'Séance B — Full Upper Body Intensif',
+        warmup: [{n:'Vélo stationnaire',d:'10 min niveaux 10→14, simulation côte',sets:'10 min'}],
+        muscle: [
+          {n:'Développé couché barre MAX',d:'Charges records, 3 reps, spotting indispensable',sets:'5 × 3 reps · 90% RM · repos 3-4 min'},
+          {n:'Tractions lestées MAX',d:'Lest maximum permettant 5 reps propres',sets:'4 × 5 reps · repos 3 min'},
+          {n:'Rowing barre lourd',d:'Charges records personnelles',sets:'4 × 6 reps · repos 3 min'},
+          {n:'Giant set épaules',d:'Press 10 + Élévations 12 + Oiseau 12 + Face pull 15 · aucun repos entre',sets:'3 rounds · repos 2 min'},
+          {n:'Curl barre + Curl incliné + Marteau Triset',d:'3 exercices biceps enchaînés 10+8+12 reps',sets:'3 trisets · repos 2 min'},
+          {n:'Skull crushers + Dips lestés + Kickbacks Triset',d:'3 exercices triceps 10+8+12 reps',sets:'3 trisets · repos 2 min'},
+          {n:'Core intensif',d:'Dragon flag 10 + Relevés jambes 15 + Planche 1 min · enchaîner',sets:'3 rounds · repos 90 sec'},
+        ],
+        finisher: {mins:30,speed:8,incline:15,note:'Marche inclinée 15% · 8 km/h · 30 min'}
+      }
+    ]
+  ],
+  // PHASE 4 — DÉFINITION (semaines 11+)
+  [
+    // Semaine 11
+    [
+      {
+        name: 'Séance A — Circuit Jambes Brûle-Graisses',
+        warmup: [{n:'Vélo HIIT',d:'10 min : 30 sec niveau max · 30 sec récup · × 10',sets:'10 min'}],
+        muscle: [
+          {n:'Squat barre + Fentes Superset',d:'Squat barre 12 reps puis fentes marchées 20 pas · 0 repos entre',sets:'4 × 12+20 · repos 90 sec'},
+          {n:'Leg press volume',d:'Charges modérées, volume élevé, 3 drop-sets',sets:'3 × 20 + drop · repos 2 min'},
+          {n:'Circuit fessiers',d:'Hip thrust 15 + Abduction 20 + Donkey kicks 15/jambe · enchaîner',sets:'4 circuits · repos 90 sec'},
+          {n:'Soulevé de terre roumain',d:'Charges modérées, focus étirement et contraction, haut reps',sets:'3 × 15 reps · repos 90 sec'},
+          {n:'Step-ups lestés',d:'Monter sur banc, cuisse parallèle, poussée talon',sets:'3 × 15 reps/jambe · repos 90 sec'},
+          {n:'Bulgarian + Jump Superset',d:'Fente bulgare 8 reps puis saut sur place 10 reps · explosif',sets:'3 × 8+10/jambe · repos 2 min'},
+          {n:'Mollets debout MAX volume',d:'Charges légères mais 30 reps avec amplitude totale',sets:'4 × 30 reps · repos 60 sec'},
+        ],
+        finisher: {mins:30,speed:8,incline:15,note:'Marche inclinée 15% · 8 km/h · 30 min · objectif final proche !'}
+      },
+      {
+        name: 'Séance B — Circuit Upper Brûle-Graisses',
+        warmup: [{n:'Rameur HIIT',d:'10 min : 500m sprint · 500m récup · × répéter',sets:'10 min'}],
+        muscle: [
+          {n:'Giant set Dos',d:'Tractions 8 + Rowing barre 10 + Tirage câble 12 + Face pull 15 · enchaîner',sets:'4 giants · repos 2 min'},
+          {n:'Giant set Pecs',d:'Développé couché 10 + Incliné 10 + Écarté câbles 12 · enchaîner',sets:'4 giants · repos 2 min'},
+          {n:'Giant set Épaules',d:'Press 10 + Latérales 12 + Oiseau 12 + Shrugs 15 · enchaîner',sets:'3 giants · repos 2 min'},
+          {n:'Superset Biceps',d:'Curl barre 10 + Curl incliné 10 + Marteau 12 · enchaîner',sets:'3 supersets · repos 90 sec'},
+          {n:'Superset Triceps',d:'Skull crusher 10 + Dips lestés 10 + Kickbacks 12 · enchaîner',sets:'3 supersets · repos 90 sec'},
+          {n:'Core circuit définition',d:'Crunchs 25 + Obliques 20/côté + Planche 1 min + Dragon flag 8 · enchaîner',sets:'3 circuits · repos 90 sec'},
+        ],
+        finisher: {mins:30,speed:8,incline:15,note:'Marche inclinée 15% · 8 km/h · 30 min'}
+      }
+    ],
+    // Semaine 12+
+    [
+      {
+        name: 'Séance A — Force + Volume Jambes',
+        warmup: [{n:'Vélo HIIT intensif',d:'10 min protocole Tabata vélo : 20 sec max · 10 sec récup · × 20',sets:'10 min'}],
+        muscle: [
+          {n:'Squat barre lourd',d:'Maintenir les acquis de force de la phase 3',sets:'4 × 5 reps · 85% RM · repos 3 min'},
+          {n:'Drop-set Leg press',d:'Charge max 6 reps · -20% 10 reps · -20% 15 reps · -20% 20 reps',sets:'3 drop-sets · repos 3 min'},
+          {n:'Fentes bulgares surcharge',d:'Charges lourdes, focus explosivité en montée',sets:'4 × 6 reps/jambe · repos 2 min'},
+          {n:'Hip thrust MAX + mini-pump',d:'3 reps lourds puis 10 reps légers sans repos · focus squeeze',sets:'4 × 3+10 · repos 2 min'},
+          {n:'Soulevé de terre',d:'Technique conventionnelle, charges lourdes, 5 reps',sets:'4 × 5 reps · repos 3 min'},
+          {n:'Circuit finisher jambes',d:'Box jump 10 + Squat sauté 15 + Fentes 20 + Burpees 10',sets:'3 circuits · repos 2 min'},
+          {n:'Mollets géant',d:'Debout 20 + Assis 20 + Presse 20 · 0 repos entre',sets:'3 rounds · repos 90 sec'},
+        ],
+        finisher: {mins:30,speed:8,incline:15,note:'Marche inclinée 15% · 8 km/h · 30 min · TU PEUX LE FAIRE !'}
+      },
+      {
+        name: 'Séance B — Force + Volume Haut',
+        warmup: [{n:'Rameur HIIT',d:'10 min puissance maximale, 2000m total',sets:'10 min'}],
+        muscle: [
+          {n:'Développé couché barre',d:'Maintenir force phase 3',sets:'4 × 5 reps · 85% RM · repos 3 min'},
+          {n:'Tractions MAX + Pull-over',d:'Tractions à l\'échec + pull-over câble 15 reps · Superset',sets:'4 × max+15 · repos 2 min'},
+          {n:'Rowing barre lourd',d:'Force brute, dos bien droit',sets:'4 × 6 reps · repos 2-3 min'},
+          {n:'Press militaire lourd + Élévations',d:'Press 6 reps lourd + élévations 15 reps léger · Superset',sets:'4 × 6+15 · repos 2 min'},
+          {n:'Curl 21s',d:'7 demi-bas + 7 demi-haut + 7 complets · barre EZ',sets:'3 × 21 · repos 90 sec'},
+          {n:'Triceps 21s',d:'7 demi-bas + 7 demi-haut + 7 complets · câble',sets:'3 × 21 · repos 90 sec'},
+          {n:'Core finisher',d:'10 relevés jambes suspendus + 20 crunchs lestés + 30 Russian twists + 1 min planche',sets:'3 rounds · repos 90 sec'},
+        ],
+        finisher: {mins:30,speed:8,incline:15,note:'Marche inclinée 15% · 8 km/h · 30 min'}
+      }
+    ],
+    [
+      {
+        name: 'Séance A — Peak Week Jambes',
+        warmup: [{n:'Vélo HIIT',d:'10 min protocole intensif',sets:'10 min'}],
+        muscle: [
+          {n:'Squat barre lourd',d:'Charges records, technique parfaite',sets:'5 × 5 reps · MAX · repos 3 min'},
+          {n:'Leg press total body drop',d:'4 drop-sets consécutifs, vider les jambes',sets:'4 drops · repos 3 min'},
+          {n:'Hip thrust + Fente Superset',d:'Hip thrust 8 reps + fente bulgare 8 reps/jambe',sets:'4 × 8+8 · repos 2 min'},
+          {n:'Soulevé de terre roumain',d:'Charges maximales',sets:'4 × 6 reps · repos 2 min'},
+          {n:'Leg press unilatéral',d:'1 jambe, focus équilibre musculaire',sets:'3 × 10/jambe · repos 2 min'},
+          {n:'Circuit plyométrique',d:'Box jump 12 + Squat sauté 15 + Burpees 10 · x3',sets:'3 circuits · repos 2 min'},
+          {n:'Mollets MAX volume',d:'Total de 100 reps réparties en 4 sets',sets:'4 × 25 reps · repos 60 sec'},
+        ],
+        finisher: {mins:30,speed:8,incline:15,note:'Marche inclinée 15% · 8 km/h · DERNIÈRE LIGNE DROITE 🔥'}
+      },
+      {
+        name: 'Séance B — Peak Week Haut',
+        warmup: [{n:'Rameur',d:'10 min full intensity',sets:'10 min'}],
+        muscle: [
+          {n:'Développé couché barre MAX',d:'Charges records personnelles',sets:'5 × 3 reps · MAX · repos 3-4 min'},
+          {n:'Tractions lestées MAX',d:'Lest maximum',sets:'4 × 5 reps · repos 3 min'},
+          {n:'Giant set Dos complet',d:'Rowing barre 8 + Tirage câble 10 + Face pull 15 + Pull-over 12',sets:'4 giants · repos 2 min'},
+          {n:'Giant set Pecs complet',d:'Développé haltères 10 + Incliné 10 + Écarté 12 + Dips 12',sets:'4 giants · repos 2 min'},
+          {n:'Giant set Épaules',d:'Press 8 + Latérales 12 + Oiseau 12 + Face pull 15',sets:'3 giants · repos 2 min'},
+          {n:'Bras finisher',d:'21s biceps + 21s triceps + Curl marteau 12 · enchaîner',sets:'3 rounds · repos 2 min'},
+          {n:'Core peak',d:'Relevés jambes max + Dragon flag max + Planche max · à l\'échec',sets:'3 rounds · repos 90 sec'},
+        ],
+        finisher: {mins:30,speed:8,incline:15,note:'Marche inclinée 15% · 8 km/h · 30 min'}
+      }
+    ]
+  ]
+];
+
+// ─── RUN PROGRAMS ─────────────────────────────────────────────
+const RUN_PROG=[
+  [ // Phase 0
+    [{i:'🏃',t:'Échauffement',d:'5 min marche rapide + 2 min trot léger'},{i:'🔁',t:'Intervalles doux',d:'4 × (2 min course + 2 min marche)'},{i:'📏',t:'Cible',d:'3,5–4 km · ~22 min · allure confortable'}],
+    [{i:'🏃',t:'Course continue',d:'20 min sans s\'arrêter, allure très confortable — tu peux parler'},{i:'📏',t:'Cible',d:'4 km · respiration nasale si possible'}],
+    [{i:'🏃',t:'Pyramide',d:'2+3+4+3+2 min course avec 1 min marche entre chaque bloc'},{i:'📏',t:'Cible',d:'4,5 km · augmenter la durée de chaque effort'}]
+  ],
+  [ // Phase 1
+    [{i:'🏃',t:'Tempo run',d:'5 min échauffement + 20 min allure soutenue'},{i:'📏',t:'Cible',d:'5 km · effort 7/10, difficile de parler'}],
+    [{i:'🔁',t:'Fractionné 6×3',d:'6 répétitions · 3 min rapide (effort 8/10) + 1 min marche récup'},{i:'📏',t:'Cible',d:'5,5 km · effort élevé sur les blocs rapides'}],
+    [{i:'🏃',t:'Long run',d:'30 min sans s\'arrêter, allure modérée régulière'},{i:'📏',t:'Cible',d:'6 km · construction base aérobie'}]
+  ],
+  [ // Phase 2
+    [{i:'🔁',t:'HIIT course',d:'8 répétitions · 1 min sprint (effort 9/10) + 1 min marche'},{i:'📏',t:'Cible',d:'5 km intense · cardio anaérobie'}],
+    [{i:'🏃',t:'Tempo soutenu',d:'5 min échauff + 25 min allure compétition (effort 8/10)'},{i:'📏',t:'Cible',d:'6,5 km · seuil lactique'}],
+    [{i:'🏃',t:'Long run progressif',d:'35 min : 15 min facile → 10 min modéré → 10 min rapide'},{i:'📏',t:'Cible',d:'7 km · négatif split (accélérer en fin)'}]
+  ],
+  [ // Phase 3
+    [{i:'🔁',t:'HIIT intensif',d:'10 répétitions · 45 sec sprint MAX + 45 sec marche'},{i:'📏',t:'Cible',d:'6 km · effort 10/10 sur les sprints · HIIT fat burning'}],
+    [{i:'🏃',t:'Tempo race pace',d:'30 min à allure compétition, difficile à maintenir'},{i:'📏',t:'Cible',d:'7,5 km · effort 8-9/10 constant'}],
+    [{i:'🏃',t:'Long run endurance',d:'40 min allure facile · récupération active'},{i:'📏',t:'Cible',d:'8 km · effort 5/10 · jambes fraîches en fin'}]
+  ]
+];
+
+// ─── WEEKLY MEALS — 2g protéines/kg = ~185g/jour ─────────────
+// Chaque repas affiche : kcal · protéines · glucides · lipides
+// Créatine 5g intégrée dans la routine
+function getWeeklyMeals(weekNum, dayType) {
+  const s = getState();
+  const prefs = s.foodPrefs || {};
+  const ok = (id) => prefs[id] !== false;
+
+  const p1 = ok('poulet') ? 'Blanc de poulet (200g)' : ok('thon') ? 'Thon boîte (200g)' : 'Filet de dinde (200g)';
+  const p1s = ok('poulet') ? 'poulet' : ok('thon') ? 'thon' : 'dinde';
+  const p2 = ok('saumon') ? 'Saumon (180g)' : ok('cabillaud') ? 'Cabillaud (200g)' : ok('thon') ? 'Thon (200g)' : 'Crevettes (200g)';
+  const p3 = ok('oeufs') ? 'Œufs entiers' : 'Blanc de poulet';
+  const p4 = ok('thon') ? 'Thon (160g)' : ok('poulet') ? 'Poulet froid (160g)' : 'Crevettes (150g)';
+  const veg1 = ok('haricots_verts') ? 'haricots verts (200g)' : ok('pois') ? 'petits pois (200g)' : 'brocoli (200g)';
+  const veg2 = ok('pois') ? 'petits pois (150g)' : ok('haricots_verts') ? 'haricots verts (150g)' : 'épinards (150g)';
+  const veg3 = ok('carotte') ? 'carottes' : 'courgettes';
+  const leg = ok('haricots_blancs') ? 'haricots blancs (100g)' : ok('lentilles') ? 'lentilles (100g)' : 'pois chiches (100g)';
+  const fruit = ok('melon') ? 'melon (200g)' : 'pomme';
+  const snack = ok('carotte') ? 'carottes bâtonnets' : 'concombre';
+  const dy = ok('yaourt') ? 'Yaourt grec 0% (200g)' : 'Fromage blanc 0% (200g)';
+  const c1 = ok('riz') ? 'riz complet cuit (150g)' : 'quinoa cuit (150g)';
+  const c2 = ok('avoine') ? 'flocons d\'avoine (60g)' : 'son d\'avoine (50g)';
+  const br = ok('pain') ? 'pain complet (2 tranches)' : 'galettes de riz (3)';
+
+  // Créatine : après séance sport, matin les jours repos
+  const creatine = {
+    gym:  {t:'💊 Créatine',n:'5g monohydrate dans un verre d\'eau — à prendre juste après la séance',k:'0 kcal · 0g P · timing optimal post-effort'},
+    run:  {t:'💊 Créatine',n:'5g monohydrate dans ton yaourt ou un verre d\'eau — après la course',k:'0 kcal · 0g P · prendre tous les jours sans exception'},
+    rest: {t:'💊 Créatine',n:'5g monohydrate le matin au réveil — maintenir les niveaux musculaires',k:'0 kcal · 0g P · même les jours sans sport'},
+  };
+
+  const w = weekNum % 8;
+
+  // JOURS DE COURSE : ~1450 kcal · ~185g P · ~120g G · ~35g L
+  const run_menus = [
+    [
+      {t:'🌅 Matin',n:`${dy} + ${c2} + ${fruit}`,k:'~400 kcal · 35g P · 45g G · 5g L'},
+      {t:'🥗 Déjeuner',n:`${p1} grillé + ${veg1} vapeur + ${c1}`,k:'~500 kcal · 55g P · 40g G · 8g L'},
+      {t:'🍎 Collation',n:`${snack} + ${dy} (100g)`,k:'~150 kcal · 15g P · 15g G · 1g L'},
+      {t:'🍽️ Dîner',n:`4 œufs omelette + ${veg2} + salade ${veg3}`,k:'~400 kcal · 32g P · 15g G · 22g L'},
+      creatine.run,
+    ],
+    [
+      {t:'🌅 Matin',n:`3 ${p3} brouillés + ${br} + ${fruit}`,k:'~420 kcal · 30g P · 42g G · 14g L'},
+      {t:'🥗 Déjeuner',n:`${p4} + ${leg} + poivrons + huile olive (1cs)`,k:'~490 kcal · 50g P · 28g G · 10g L'},
+      {t:'🍎 Collation',n:`${dy} (150g) + amandes (15g)`,k:'~170 kcal · 18g P · 8g G · 9g L'},
+      {t:'🍽️ Dîner',n:`${p1s==='poulet'?'200g poulet':'200g '+p1s} vapeur + ${veg1} + ${c1}`,k:'~430 kcal · 52g P · 38g G · 7g L'},
+      creatine.run,
+    ],
+    [
+      {t:'🌅 Matin',n:`Smoothie : ${dy} + ${c2} + banane (1/2)`,k:'~390 kcal · 32g P · 50g G · 4g L'},
+      {t:'🥗 Déjeuner',n:`${p2} + quinoa (120g cuit) + ${veg2} + citron`,k:'~480 kcal · 45g P · 35g G · 14g L'},
+      {t:'🍎 Collation',n:`${snack} + 2 œufs durs`,k:'~160 kcal · 14g P · 8g G · 9g L'},
+      {t:'🍽️ Dîner',n:`4 blancs œufs + 2 entiers omelette + salade verte + ${veg3}`,k:'~380 kcal · 38g P · 12g G · 18g L'},
+      creatine.run,
+    ],
+    [
+      {t:'🌅 Matin',n:`${dy} + ${c2} + kiwi + graines chia (10g)`,k:'~410 kcal · 34g P · 48g G · 6g L'},
+      {t:'🥗 Déjeuner',n:`${p1} curry léger + ${c1} + ${veg1}`,k:'~510 kcal · 56g P · 42g G · 8g L'},
+      {t:'🍎 Collation',n:`${p1s==='poulet'?'120g poulet froid':'120g '+p1s} + ${snack}`,k:'~170 kcal · 30g P · 8g G · 3g L'},
+      {t:'🍽️ Dîner',n:`${p4} + salade + ${leg} + poivrons`,k:'~380 kcal · 45g P · 22g G · 8g L'},
+      creatine.run,
+    ],
+    [
+      {t:'🌅 Matin',n:`Porridge ${c2} + ${fruit} + ${dy} (100g)`,k:'~400 kcal · 30g P · 52g G · 5g L'},
+      {t:'🥗 Déjeuner',n:`${p2} mariné citron + ${veg2} + ${c1}`,k:'~495 kcal · 46g P · 38g G · 14g L'},
+      {t:'🍎 Collation',n:`${dy} (150g) + ${fruit}`,k:'~155 kcal · 16g P · 20g G · 1g L'},
+      {t:'🍽️ Dîner',n:`200g ${p1s} rôti + ${veg1} + salade`,k:'~400 kcal · 48g P · 12g G · 8g L'},
+      creatine.run,
+    ],
+    [
+      {t:'🌅 Matin',n:`2 œufs + 2 blancs brouillés + ${br} + concombre`,k:'~380 kcal · 32g P · 38g G · 12g L'},
+      {t:'🥗 Déjeuner',n:`Bowl : ${c1} + 180g ${p1s} + ${veg1} + avocat (1/4)`,k:'~530 kcal · 54g P · 42g G · 12g L'},
+      {t:'🍎 Collation',n:`${dy} (100g) + noix (10g)`,k:'~145 kcal · 14g P · 8g G · 7g L'},
+      {t:'🍽️ Dîner',n:`Soupe ${veg3} + ${p4} + ${leg}`,k:'~370 kcal · 42g P · 24g G · 6g L'},
+      creatine.run,
+    ],
+    [
+      {t:'🌅 Matin',n:`Pancakes : ${c2} + 2 œufs + ${dy} (100g)`,k:'~420 kcal · 34g P · 48g G · 10g L'},
+      {t:'🥗 Déjeuner',n:`200g ${p1s} citron-herbes + ${veg2} + ${c1}`,k:'~490 kcal · 56g P · 38g G · 7g L'},
+      {t:'🍎 Collation',n:`${snack} + ${dy} (100g)`,k:'~130 kcal · 14g P · 10g G · 1g L'},
+      {t:'🍽️ Dîner',n:`${p2} papillote + ${veg1} + riz basmati (100g cuit)`,k:'~420 kcal · 44g P · 36g G · 10g L'},
+      creatine.run,
+    ],
+    [
+      {t:'🌅 Matin',n:`${dy} + granola maison (${c2}+noix 10g) + ${fruit}`,k:'~410 kcal · 30g P · 50g G · 8g L'},
+      {t:'🥗 Déjeuner',n:`Wok 200g ${p1s} + ${veg1} + ${c1} + sauce soja`,k:'~505 kcal · 56g P · 40g G · 8g L'},
+      {t:'🍎 Collation',n:`120g ${p1s} froid + ${snack}`,k:'~155 kcal · 28g P · 8g G · 3g L'},
+      {t:'🍽️ Dîner',n:`3 œufs omelette + ${veg3} + salade`,k:'~350 kcal · 28g P · 10g G · 20g L'},
+      creatine.run,
+    ],
+  ];
+
+  // JOURS DE SALLE : ~1550 kcal · ~190g P · ~130g G · ~38g L (+ calories pré/post séance)
+  const gym_menus = [
+    [
+      {t:'🌅 Matin (pré-séance)',n:`3 œufs brouillés + ${br} + ${fruit}`,k:'~430 kcal · 32g P · 42g G · 14g L'},
+      {t:'🥗 Déjeuner',n:`${p4} + ${leg} + poivrons + huile olive`,k:'~490 kcal · 50g P · 28g G · 10g L'},
+      {t:'🍎 Collation (pré-séance si le soir)',n:`${dy} + banane`,k:'~220 kcal · 18g P · 38g G · 1g L'},
+      {t:'🍽️ Dîner (post-séance)',n:`200g ${p1s} vapeur + ${veg2} + ${c1}`,k:'~500 kcal · 58g P · 38g G · 7g L'},
+      creatine.gym,
+    ],
+    [
+      {t:'🌅 Matin',n:`${dy} + ${c2} + ${fruit}`,k:'~410 kcal · 34g P · 48g G · 5g L'},
+      {t:'🥗 Déjeuner',n:`200g ${p1s} grillé + ${c1} + ${veg1}`,k:'~520 kcal · 58g P · 42g G · 8g L'},
+      {t:'🍎 Collation',n:`2 œufs durs + ${snack}`,k:'~160 kcal · 14g P · 6g G · 9g L'},
+      {t:'🍽️ Dîner',n:`${p2} + ${veg2} + salade verte`,k:'~450 kcal · 46g P · 12g G · 18g L'},
+      creatine.gym,
+    ],
+    [
+      {t:'🌅 Matin',n:`Porridge ${c2} + 1 œuf entier + ${dy} (100g)`,k:'~420 kcal · 34g P · 52g G · 8g L'},
+      {t:'🥗 Déjeuner',n:`${p2} + quinoa (120g cuit) + ${veg1} + citron`,k:'~500 kcal · 46g P · 36g G · 16g L'},
+      {t:'🍎 Collation',n:`120g ${p1s} froid + amandes (20g)`,k:'~220 kcal · 32g P · 4g G · 11g L'},
+      {t:'🍽️ Dîner',n:`${p4} + ${leg} + courgettes + herbes`,k:'~420 kcal · 50g P · 26g G · 8g L'},
+      creatine.gym,
+    ],
+    [
+      {t:'🌅 Matin',n:`2 œufs + 2 blancs + ${br} + ${fruit}`,k:'~390 kcal · 30g P · 42g G · 12g L'},
+      {t:'🥗 Déjeuner',n:`Bowl : 180g ${p1s} + ${c1} + ${veg2} + sauce yaourt`,k:'~530 kcal · 56g P · 42g G · 10g L'},
+      {t:'🍎 Collation',n:`${dy} (150g) + noix (10g)`,k:'~185 kcal · 18g P · 10g G · 8g L'},
+      {t:'🍽️ Dîner',n:`${p2} herbes + ${veg1} + ${c1}`,k:'~480 kcal · 46g P · 38g G · 14g L'},
+      creatine.gym,
+    ],
+    [
+      {t:'🌅 Matin',n:`Smoothie bowl : ${dy} + ${c2} + fruits rouges`,k:'~400 kcal · 32g P · 52g G · 5g L'},
+      {t:'🥗 Déjeuner',n:`200g ${p1s} mariné + patate douce (150g) + ${veg2}`,k:'~540 kcal · 56g P · 46g G · 8g L'},
+      {t:'🍎 Collation',n:`${p4} + ${snack}`,k:'~190 kcal · 36g P · 8g G · 3g L'},
+      {t:'🍽️ Dîner',n:`3 œufs + 2 blancs omelette + ${veg1} + salade`,k:'~400 kcal · 34g P · 12g G · 22g L'},
+      creatine.gym,
+    ],
+    [
+      {t:'🌅 Matin',n:`2 œufs cocotte + ${br} grillé + concombre`,k:'~380 kcal · 28g P · 40g G · 14g L'},
+      {t:'🥗 Déjeuner',n:`200g ${p1s} + ${c1} + ${veg1} + huile olive`,k:'~510 kcal · 58g P · 40g G · 10g L'},
+      {t:'🍎 Collation',n:`${dy} grec (200g) + ${c2} sec (30g)`,k:'~230 kcal · 24g P · 22g G · 3g L'},
+      {t:'🍽️ Dîner',n:`${p2} + ${leg} + salade tiède`,k:'~470 kcal · 46g P · 26g G · 16g L'},
+      creatine.gym,
+    ],
+    [
+      {t:'🌅 Matin',n:`Wrap ${br} + 3 œufs brouillés + épinards`,k:'~420 kcal · 30g P · 42g G · 14g L'},
+      {t:'🥗 Déjeuner',n:`${p4} + ${c1} + ${veg2} + citron`,k:'~490 kcal · 50g P · 38g G · 8g L'},
+      {t:'🍎 Collation',n:`120g ${p1s} froid + ${dy} (100g)`,k:'~220 kcal · 36g P · 8g G · 5g L'},
+      {t:'🍽️ Dîner',n:`200g ${p1s} vapeur + ${veg1} + quinoa (100g cuit)`,k:'~480 kcal · 58g P · 36g G · 8g L'},
+      creatine.gym,
+    ],
+    [
+      {t:'🌅 Matin',n:`${dy} + ${c2} + beurre amande (1cs) + ${fruit}`,k:'~440 kcal · 34g P · 50g G · 12g L'},
+      {t:'🥗 Déjeuner',n:`Poke bowl : ${p2} + ${c1} + ${veg1} + edamame (50g)`,k:'~540 kcal · 46g P · 42g G · 16g L'},
+      {t:'🍎 Collation',n:`2 œufs durs + ${snack}`,k:'~160 kcal · 14g P · 6g G · 9g L'},
+      {t:'🍽️ Dîner',n:`200g ${p1s} grillé + ${veg2} + ${veg3} rôties`,k:'~430 kcal · 56g P · 14g G · 10g L'},
+      creatine.gym,
+    ],
+  ];
+
+  // JOURS DE REPOS : ~1350 kcal · ~170g P · ~100g G · ~32g L (déficit + récup)
+  const rest_menus = [
+    [
+      {t:'🌅 Matin',n:`${dy} + ${fruit} frais`,k:'~290 kcal · 22g P · 32g G · 2g L'},
+      {t:'🥗 Déjeuner',n:`Soupe ${veg3}+${leg} + ${p1s==='poulet'?'100g poulet':'100g '+p1s} + ${br}`,k:'~420 kcal · 46g P · 38g G · 6g L'},
+      {t:'🍎 Collation',n:`Pomme + amandes (15g)`,k:'~145 kcal · 4g P · 22g G · 8g L'},
+      {t:'🍽️ Dîner',n:`${p2} vapeur + ${veg1} + citron`,k:'~380 kcal · 42g P · 12g G · 14g L'},
+      creatine.rest,
+    ],
+    [
+      {t:'🌅 Matin',n:`${dy} + ${fruit} + noix (10g)`,k:'~295 kcal · 22g P · 30g G · 8g L'},
+      {t:'🥗 Déjeuner',n:`Salade : 150g ${p1s} + ${veg1} + ${leg} + huile olive`,k:'~430 kcal · 46g P · 26g G · 12g L'},
+      {t:'🍎 Collation',n:`${snack} + 1 œuf dur`,k:'~110 kcal · 8g P · 8g G · 5g L'},
+      {t:'🍽️ Dîner',n:`${p4} + salade verte + ${veg3}`,k:'~330 kcal · 38g P · 10g G · 8g L'},
+      creatine.rest,
+    ],
+    [
+      {t:'🌅 Matin',n:`2 œufs à la coque + ${br} grillé`,k:'~300 kcal · 18g P · 38g G · 10g L'},
+      {t:'🥗 Déjeuner',n:`${p2} froid + salade verte + ${veg3} + citron`,k:'~370 kcal · 40g P · 10g G · 14g L'},
+      {t:'🍎 Collation',n:`${dy} (100g) + ${fruit}`,k:'~145 kcal · 12g P · 22g G · 1g L'},
+      {t:'🍽️ Dîner',n:`Wok léger 150g ${p1s} + ${veg2} + citron`,k:'~330 kcal · 40g P · 12g G · 8g L'},
+      creatine.rest,
+    ],
+    [
+      {t:'🌅 Matin',n:`Smoothie vert : épinards + ${dy} + ${fruit} + ${c2}`,k:'~310 kcal · 26g P · 38g G · 4g L'},
+      {t:'🥗 Déjeuner',n:`Bowl détox : ${leg} + ${veg1} + 150g ${p1s} + poivrons`,k:'~430 kcal · 48g P · 30g G · 8g L'},
+      {t:'🍎 Collation',n:`120g ${p1s} froid + ${snack}`,k:'~160 kcal · 28g P · 8g G · 3g L'},
+      {t:'🍽️ Dîner',n:`Soupe ${veg2} + ${p4} (light)`,k:'~310 kcal · 34g P · 14g G · 6g L'},
+      creatine.rest,
+    ],
+    [
+      {t:'🌅 Matin',n:`${dy} + muesli léger (40g) + ${fruit}`,k:'~310 kcal · 22g P · 42g G · 4g L'},
+      {t:'🥗 Déjeuner',n:`${p2} + salade fenouil + ${veg3} + orange`,k:'~380 kcal · 40g P · 14g G · 14g L'},
+      {t:'🍎 Collation',n:`Infusion + ${dy} (100g)`,k:'~100 kcal · 12g P · 8g G · 1g L'},
+      {t:'🍽️ Dîner',n:`150g ${p1s} vapeur + ${veg1} + ${veg3} rôties`,k:'~360 kcal · 42g P · 14g G · 8g L'},
+      creatine.rest,
+    ],
+    [
+      {t:'🌅 Matin',n:`2 blancs + 1 œuf entier brouillés + ${br} + concombre`,k:'~300 kcal · 24g P · 38g G · 8g L'},
+      {t:'🥗 Déjeuner',n:`Taboulé léger : ${c1} + concombre + persil + 150g ${p1s}`,k:'~410 kcal · 46g P · 36g G · 7g L'},
+      {t:'🍎 Collation',n:`Kiwi + noix (10g)`,k:'~110 kcal · 2g P · 16g G · 5g L'},
+      {t:'🍽️ Dîner',n:`${p4} + salade composée + ${leg}`,k:'~360 kcal · 42g P · 22g G · 8g L'},
+      creatine.rest,
+    ],
+    [
+      {t:'🌅 Matin',n:`${dy} grec + ${c2} sec (30g) + noix (10g)`,k:'~305 kcal · 26g P · 24g G · 9g L'},
+      {t:'🥗 Déjeuner',n:`150g ${p1s} froid + salade + ${br}`,k:'~380 kcal · 42g P · 36g G · 7g L'},
+      {t:'🍎 Collation',n:`${snack} + 1 œuf dur`,k:'~110 kcal · 8g P · 8g G · 5g L'},
+      {t:'🍽️ Dîner',n:`${p2} + ${veg2} étuvées + citron`,k:'~360 kcal · 40g P · 12g G · 14g L'},
+      creatine.rest,
+    ],
+    [
+      {t:'🌅 Matin',n:`Compote (sans sucre) + ${dy} + ${c2}`,k:'~300 kcal · 24g P · 38g G · 3g L'},
+      {t:'🥗 Déjeuner',n:`Salade niçoise légère : ${p4} + ${veg1} + poivrons + 1 œuf`,k:'~400 kcal · 46g P · 18g G · 12g L'},
+      {t:'🍎 Collation',n:`${fruit} + amandes (10g)`,k:'~125 kcal · 3g P · 20g G · 6g L'},
+      {t:'🍽️ Dîner',n:`150g ${p1s} poché + ${veg1} + bouillon`,k:'~330 kcal · 42g P · 12g G · 6g L'},
+      creatine.rest,
+    ],
+  ];
+
+  const map = {run:run_menus, gym:gym_menus, rest:rest_menus};
+  return (map[dayType]||map.rest)[w];
+}
+
+// ─── SHOPPING LIST (generated from week's meals) ─────────────
+function getWeekShopList(weekNum) {
+  const s = getState();
+  const prefs = s.foodPrefs || {};
+  const ok = (id) => prefs[id] !== false;
+  const w = weekNum % 8;
+
+  // Collect all proteins and veggies needed this week
+  const proteins = new Set();
+  const veggies = new Set();
+  const carbs = new Set();
+  const dairy = new Set();
+  const other = new Set();
+
+  // Always needed
+  other.add({name:'Huile d\'olive',qty:'1 bouteille',cat:'🫙 Épicerie'});
+  other.add({name:'Citrons',qty:'4 pièces',cat:'🍋 Fruits'});
+  other.add({name:'Herbes fraîches (persil, coriandre)',qty:'2 bouquets',cat:'🌿 Herbes'});
+  other.add({name:'Ail',qty:'1 tête',cat:'🧄 Aromates'});
+
+  if(ok('poulet'))proteins.add({name:'Blanc de poulet',qty:'900g',cat:'🍗 Protéines'});
+  if(ok('saumon'))proteins.add({name:'Saumon',qty:'400g',cat:'🍗 Protéines'});
+  if(ok('thon'))proteins.add({name:'Thon en boîte (eau)',qty:'4 boîtes',cat:'🍗 Protéines'});
+  if(ok('oeufs'))proteins.add({name:'Œufs',qty:'12 pièces',cat:'🍗 Protéines'});
+  if(ok('cabillaud'))proteins.add({name:'Cabillaud ou poisson blanc',qty:'300g',cat:'🍗 Protéines'});
+  if(!proteins.size)proteins.add({name:'Dinde (filet)',qty:'600g',cat:'🍗 Protéines'});
+
+  if(ok('haricots_verts'))veggies.add({name:'Haricots verts',qty:'500g',cat:'🥦 Légumes'});
+  if(ok('pois'))veggies.add({name:'Petits pois (surgelés)',qty:'500g',cat:'🥦 Légumes'});
+  if(ok('carotte'))veggies.add({name:'Carottes',qty:'1 kg',cat:'🥦 Légumes'});
+  veggies.add({name:'Poivrons',qty:'3 pièces',cat:'🥦 Légumes'});
+  veggies.add({name:'Concombres',qty:'2 pièces',cat:'🥦 Légumes'});
+  veggies.add({name:'Salade verte (sac)',qty:'2 sachets',cat:'🥦 Légumes'});
+  veggies.add({name:'Épinards frais',qty:'200g',cat:'🥦 Légumes'});
+  veggies.add({name:'Courgettes',qty:'2 pièces',cat:'🥦 Légumes'});
+
+  if(ok('melon'))veggies.add({name:'Melon',qty:'1 pièce',cat:'🍎 Fruits'});
+  veggies.add({name:'Pommes',qty:'4 pièces',cat:'🍎 Fruits'});
+  veggies.add({name:'Kiwis',qty:'4 pièces',cat:'🍎 Fruits'});
+
+  if(ok('riz'))carbs.add({name:'Riz complet',qty:'500g',cat:'🌾 Féculents'});
+  if(ok('pain'))carbs.add({name:'Pain complet',qty:'1 miche',cat:'🌾 Féculents'});
+  if(ok('avoine'))carbs.add({name:'Flocons d\'avoine',qty:'500g',cat:'🌾 Féculents'});
+  carbs.add({name:'Quinoa',qty:'300g',cat:'🌾 Féculents'});
+
+  if(ok('yaourt'))dairy.add({name:'Yaourt nature 0% (x8)',qty:'8 pots',cat:'🥛 Laitiers'});
+  if(ok('fromage_frais'))dairy.add({name:'Fromage frais 0%',qty:'2 pots',cat:'🥛 Laitiers'});
+  dairy.add({name:'Fromage blanc 0%',qty:'500g',cat:'🥛 Laitiers'});
+
+  if(ok('haricots_blancs'))other.add({name:'Haricots blancs (boîte)',qty:'2 boîtes',cat:'🫘 Légumineuses'});
+  if(ok('lentilles'))other.add({name:'Lentilles (boîte)',qty:'2 boîtes',cat:'🫘 Légumineuses'});
+  other.add({name:'Pois chiches (boîte)',qty:'1 boîte',cat:'🫘 Légumineuses'});
+  other.add({name:'Amandes (nature)',qty:'100g',cat:'🌰 Oléagineux'});
+  other.add({name:'Noix de cajou',qty:'50g',cat:'🌰 Oléagineux'});
+
+  // Combine all
+  const allItems = [...proteins, ...veggies, ...carbs, ...dairy, ...other];
+  const groups = {};
+  allItems.forEach(item => {
+    if(!groups[item.cat]) groups[item.cat] = [];
+    groups[item.cat].push(item);
+  });
+  return groups;
+}
+
+// ─── STATE ────────────────────────────────────────────────────
+function getState(){
+  try{return JSON.parse(localStorage.getItem('coach_v3')||'null')||defState()}
+  catch(e){return defState()}
+}
+function defState(){
+  return{streak:0,lastDone:null,weight:93,weights:[],doneDays:{},
+    gymSessionA:0,gymSessionB:0,runIdx:0,
+    startDate:new Date().toISOString(),foodPrefs:{},shopChecked:{}}
+}
+function saveState(s){try{localStorage.setItem('coach_v3',JSON.stringify(s))}catch(e){}}
+
+function todayKey(){const d=new Date();return`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`}
+function getWeekNum(s){return Math.min(Math.floor((new Date()-new Date(s.startDate))/(7*24*3600*1000)),15)}
+function getPhase(w){return w<3?0:w<6?1:w<10?2:3}
+function getWeekInPhase(w){
+  if(w<3)return w;
+  if(w<6)return w-3;
+  if(w<10)return Math.min(w-6,2);
+  return Math.min(w-10,2);
+}
+
+function getGymSession(s, sessionType) {
+  const wk = getWeekNum(s);
+  const ph = getPhase(wk);
+  const wip = getWeekInPhase(wk);
+  const phData = GYM_SESSIONS[ph];
+  const weekData = phData[Math.min(wip, phData.length-1)];
+  if(sessionType === 'A') return weekData[0];
+  return weekData[1];
+}
+
+function calcETA(state){
+  const cur=state.weights.length>0?state.weights[0].val:state.weight;
+  const tolose=cur-80;
+  if(tolose<=0)return{weeks:0,months:0,dateStr:'Objectif atteint ! 🎉',rate:'0.40'};
+  let rate=0.4;
+  const wk=getWeekNum(state);
+  if(wk>1&&state.weights.length>=2){
+    const oldest=state.weights[state.weights.length-1].val;
+    const newest=state.weights[0].val;
+    const actual=(oldest-newest)/Math.max(1,wk);
+    if(actual>0.1)rate=Math.min(actual,0.8);
+  }
+  const weeks=Math.ceil(tolose/rate);
+  const arr=new Date();arr.setDate(arr.getDate()+weeks*7);
+  return{weeks,months:Math.round(weeks/4.3),dateStr:MONTHS[arr.getMonth()]+' '+arr.getFullYear(),rate:rate.toFixed(2)};
+}
+
+// ─── RENDER MEALS ─────────────────────────────────────────────
+function renderMeals(meals) {
+  return meals.map(m => {
+    const isCreatine = m.t.includes('Créatine');
+    // Parse macros from k string like "~430 kcal · 52g P · 38g G · 7g L"
+    const kparts = m.k.split('·');
+    const kcal = kparts[0] ? kparts[0].trim() : '';
+    const prot = kparts[1] ? kparts[1].trim() : '';
+    const gluc = kparts[2] ? kparts[2].trim() : '';
+    const lip  = kparts[3] ? kparts[3].trim() : '';
+    const macrosHTML = !isCreatine && prot ? `
+      <div class="macros">
+        <span class="macro-pill">${kcal}</span>
+        <span class="macro-pill prot">💪 ${prot}</span>
+        ${gluc ? `<span class="macro-pill gluc">🌾 ${gluc}</span>` : ''}
+        ${lip  ? `<span class="macro-pill lip">🥑 ${lip}</span>`  : ''}
+      </div>` : `<div class="meal-k">${m.k}</div>`;
+    return `<div class="meal-row${isCreatine?' creatine-row':''}">
+      <div class="meal-t">${m.t}</div>
+      <div class="meal-n">${m.n}</div>
+      ${macrosHTML}
+    </div>`;
+  }).join('');
+}
+
+// ─── RENDER HEADER ─────────────────────────────────────────────
+function renderHeader(){
+  const s=getState();
+  const d=new Date();
+  document.getElementById('date-str').textContent=DAYS_L[d.getDay()]+' '+d.getDate()+' '+MONTHS[d.getMonth()];
+  document.getElementById('streak-num').textContent=s.streak;
+  document.getElementById('flame-pill').style.opacity=s.streak===0?'0.35':'1';
+}
+
+// ─── GYM SESSION HTML ─────────────────────────────────────────
+function buildGymHTML(session, sessionType) {
+  const warmupHTML = session.warmup.map(e=>`
+    <div class="exercise-row">
+      <div class="ex-num" style="background:#fef3c7;color:#92400e">🔥</div>
+      <div><div class="ex-name">${e.n}</div><div class="ex-detail">${e.d}</div><span class="ex-sets">${e.sets}</span></div>
+    </div>`).join('');
+
+  const muscleHTML = session.muscle.map((e,i)=>`
+    <div class="exercise-row">
+      <div class="ex-num">${i+1}</div>
+      <div><div class="ex-name">${e.n}</div><div class="ex-detail">${e.d}</div><span class="ex-sets">${e.sets}</span></div>
+    </div>`).join('');
+
+  return `
+    <div class="gym-section">
+      <div class="gym-section-title">Échauffement <span class="gym-section-badge s-warmup">~10 min</span></div>
+      <div class="card-body" style="padding:0 0 4px">${warmupHTML}</div>
+    </div>
+    <div class="gym-section">
+      <div class="gym-section-title">Programme musculaire <span class="gym-section-badge s-muscle">~50 min</span></div>
+      <div class="card-body" style="padding:0 0 4px">${muscleHTML}</div>
+    </div>
+    <div class="gym-section">
+      <div class="gym-section-title">Cardio finisher <span class="gym-section-badge s-cardio">30 min</span></div>
+      <div class="tapis-card">
+        <div class="tapis-title">🏃 Tapis de marche incliné</div>
+        <div class="tapis-stats">
+          <div class="tapis-stat"><div class="tapis-val">${session.finisher.incline}%</div><div class="tapis-lbl">Inclinaison</div></div>
+          <div class="tapis-stat"><div class="tapis-val">${session.finisher.speed} km/h</div><div class="tapis-lbl">Vitesse</div></div>
+          <div class="tapis-stat"><div class="tapis-val">${session.finisher.mins} min</div><div class="tapis-lbl">Durée</div></div>
+        </div>
+        <div class="tapis-note">${session.finisher.note}</div>
+      </div>
+    </div>`;
+}
+
+// ─── TAB: TODAY ───────────────────────────────────────────────
+function renderToday(){
+  const s=getState();
+  const dow=new Date().getDay();
+  const sched=SCHED[dow];
+  const isDone=!!s.doneDays[todayKey()];
+  const wk=getWeekNum(s);
+  const ph=getPhase(wk);
+  const eta=calcETA(s);
+  const cur=s.weights.length>0?s.weights[0].val:s.weight;
+  const pct=Math.max(0,Math.min(100,Math.round((93-cur)/(93-80)*100)));
+
+  // Determine if this gym session is A or B
+  // Lun=run, Mar=gymA, Mer=run, Jeu=gymB, Ven=run
+  const isGymA = (dow === 2); // Tuesday
+  const isGymB = (dow === 4); // Thursday
+
+  let sessionHTML = '';
+  if(sched.type==='gym'){
+    const sessionType = isGymA ? 'A' : 'B';
+    const session = getGymSession(s, sessionType);
+    sessionHTML = buildGymHTML(session, sessionType);
+  } else if(sched.type==='run'){
+    const pool=RUN_PROG[ph];
+    const progs=pool[s.runIdx%pool.length];
+    sessionHTML = `<div class="card-body">${progs.map(p=>`<div class="prog-item"><div class="prog-ico ico-run">${p.i}</div><div><div class="prog-lbl">${p.t}</div><div class="prog-det">${p.d}</div></div></div>`).join('')}</div>`;
+  } else {
+    sessionHTML = `<div class="card-body">
+      <div class="prog-item"><div class="prog-ico ico-rest">😌</div><div><div class="prog-lbl">Récupération</div><div class="prog-det">Marche légère 20 min ou repos complet — le corps se reconstruit pendant le repos</div></div></div>
+      <div class="prog-item"><div class="prog-ico ico-rest">💧</div><div><div class="prog-lbl">Hydratation</div><div class="prog-det">Boire au moins 2L d'eau aujourd'hui, plus si tu as été active</div></div></div>
+      <div class="prog-item"><div class="prog-ico ico-rest">🧘</div><div><div class="prog-lbl">Étirements</div><div class="prog-det">10 min de stretching : quadriceps, ischio-jambiers, dos, épaules</div></div></div>
+    </div>`;
+  }
+
+  const reminder=(!isDone&&sched.type!=='rest')
+    ?`<div class="reminder">⏰ ${sched.type==='run'?"C'est ton jour course — allez, on chausse les baskets !":`Séance salle aujourd'hui — programme ${isGymA?'A (Séance A)':'B (Séance B)'} · 1h30`}</div>`:'';
+
+  const meals=getWeeklyMeals(wk, sched.type);
+  const tips=['💡 Semaine 1 : La régularité bat l\'intensité. Présente-toi à chaque séance, même fatiguée.','💡 La technique prime sur les charges. Mieux vaut moins lourd et propre que lourd et blessant.','💡 Tu progresses même quand tu ne le sens pas. La transformation prend du temps, fais confiance.','💡 L\'inclinaison 15% sur le tapis brûle 3× plus de calories qu\'à plat à la même vitesse. Excellent choix !'];
+
+  document.getElementById('tab-today').innerHTML=`
+    <div class="goal-card">
+      <div class="goal-top">
+        <div><div class="goal-kg">${cur}<span> kg</span></div><div class="goal-lbl">poids actuel</div></div>
+        <div class="goal-right"><div class="goal-target">80 kg</div><div class="goal-lbl">objectif musclée</div></div>
+      </div>
+      <div class="progress-bg"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="eta-row"><div class="eta-main">~${eta.weeks} sem. · ${eta.dateStr}</div><div class="eta-pct">${pct}% accompli</div></div>
+    </div>
+    <div class="phase-pill" onclick="openPhaseModal(${ph})">
+      <div class="phase-dot"></div>
+      <div><div class="phase-name">${PHASES[ph].name}</div><div class="phase-sub">${PHASES[ph].weeks} · Semaine ${wk+1} · Appuie pour les détails</div></div>
+      <div class="chevron">›</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-val">${s.streak}🔥</div><div class="stat-lbl">Série</div></div>
+      <div class="stat-card"><div class="stat-val">${Object.keys(s.doneDays).length}</div><div class="stat-lbl">Séances</div></div>
+      <div class="stat-card"><div class="stat-val">${(93-cur).toFixed(1)}</div><div class="stat-lbl">kg perdus</div></div>
+    </div>
+    ${reminder}
+    <div class="stitle">Séance du jour ${sched.type==='gym'?'· 1h30 total':''}</div>
+    <div class="card">
+      <div class="card-head">
+        <span class="card-head-title">${sched.type==='gym'?(isGymA?'Séance A':'Séance B')+' — '+getGymSession(s,isGymA?'A':'B').name.split('—')[1]:sched.label}</span>
+        <span class="badge b-${sched.type}">${sched.type==='run'?'Course':sched.type==='gym'?'Salle':'Repos'}</span>
+      </div>
+      ${sessionHTML}
+      <button class="done-btn ${isDone?'did':'go'}" onclick="markDone()">${isDone?'✅ Séance validée — bien joué !':'Marquer comme fait ✓'}</button>
+    </div>
+    <div class="stitle">Repas du jour · Semaine ${wk+1} · ~185g protéines</div>
+    <div class="card"><div class="card-body">${renderMeals(meals)}</div></div>
+    <div class="tip-card"><strong>Coach dit :</strong> ${tips[ph%tips.length]}</div>
+  `;
+}
+
+function markDone(){
+  const s=getState();
+  const key=todayKey();
+  if(s.doneDays[key])return;
+  s.doneDays[key]=true;
+  const dow=new Date().getDay();
+  const type=SCHED[dow].type;
+  if(type==='run')s.runIdx=(s.runIdx||0)+1;
+  else if(type==='gym'){
+    if(dow===2)s.gymSessionA=(s.gymSessionA||0)+1;
+    else s.gymSessionB=(s.gymSessionB||0)+1;
+  }
+  const yest=new Date();yest.setDate(yest.getDate()-1);
+  const yKey=`${yest.getFullYear()}-${yest.getMonth()}-${yest.getDate()}`;
+  if(s.lastDone===yKey||s.lastDone===null)s.streak++;
+  else if(s.lastDone!==key)s.streak=1;
+  s.lastDone=key;
+  saveState(s);
+  renderHeader();
+  renderToday();
+}
+
+// ─── TAB: WEEK ────────────────────────────────────────────────
+function renderWeek(){
+  const s=getState();
+  const today=new Date();
+  const mon=new Date(today);
+  mon.setDate(today.getDate()-((today.getDay()+6)%7));
+  const wk=getWeekNum(s);
+
+  let dots='',plan='';
+  for(let i=0;i<7;i++){
+    const d=new Date(mon);d.setDate(mon.getDate()+i);
+    const key=`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    const dow=d.getDay();
+    const sc=SCHED[dow];
+    const isToday=d.toDateString()===today.toDateString();
+    const isFuture=d>today;
+    const isDone=!!s.doneDays[key];
+    let cls='day-dot';
+    let icon='';
+    if(!isFuture){
+      if(isDone){cls+=` dd-${sc.type}`;icon=sc.type==='run'?'🏃':sc.type==='gym'?'💪':'😌';}
+      else{cls+=' dd-rest';icon=isToday?'·':'✗';}
+    }else{cls+=' dd-future';icon=sc.type==='run'?'🏃':sc.type==='gym'?'💪':'😌';}
+    if(isToday)cls+=' dd-today';
+    dots+=`<div class="day-cell" onclick="openDayModal(${dow})"><div class="day-lbl">${DAYS_S[dow]}</div><div class="${cls}">${icon}</div></div>`;
+  }
+
+  const wlbls=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  const wdows=[1,2,3,4,5,6,0];
+  plan=wlbls.map((lbl,i)=>{
+    const dow=wdows[i];
+    const sc=SCHED[dow];
+    const isGymA=dow===2;
+    const detail=sc.type==='gym'?(isGymA?'Séance A':'Séance B'):sc.label;
+    return`<div class="wplan-row" onclick="openDayModal(${dow})">
+      <span class="wplan-day">${lbl}</span>
+      <span class="badge b-${sc.type}">${sc.type==='run'?'Course':sc.type==='gym'?'Salle':'Repos'}</span>
+      <span style="font-size:12px;flex:1;margin-left:6px">${detail}</span>
+      <span class="wplan-arrow">›</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('tab-week').innerHTML=`
+    <div class="stitle">Cette semaine · Semaine ${wk+1}</div>
+    <div class="card"><div class="card-body"><div class="week-grid">${dots}</div><div style="font-size:11px;color:var(--muted);text-align:center">Appuie sur un jour pour voir le programme complet</div></div></div>
+    <div class="stitle">Planning</div>
+    <div class="card"><div class="card-body">${plan}</div></div>
+  `;
+}
+
+function openDayModal(dow){
+  const s=getState();
+  const wk=getWeekNum(s);
+  const sc=SCHED[dow];
+  const isGymA=dow===2;
+  const badgeLabel=sc.type==='run'?'Course':sc.type==='gym'?'Salle':'Repos';
+
+  let content=`<span class="badge b-${sc.type}" style="display:inline-block;margin-bottom:14px">${badgeLabel}</span>`;
+
+  if(sc.type==='gym'){
+    const session=getGymSession(s, isGymA?'A':'B');
+    content+=`<div style="font-size:14px;font-weight:600;margin-bottom:10px">${session.name}</div>`;
+    content+=buildGymHTML(session, isGymA?'A':'B');
+  } else if(sc.type==='run'){
+    const ph=getPhase(wk);
+    const pool=RUN_PROG[ph];
+    const progs=pool[s.runIdx%pool.length];
+    content+=progs.map(p=>`<div class="prog-item"><div class="prog-ico ico-run">${p.i}</div><div><div class="prog-lbl">${p.t}</div><div class="prog-det">${p.d}</div></div></div>`).join('');
+  } else {
+    content+=`<div style="font-size:13px;color:var(--muted)">Journée de récupération. Marche légère, hydratation, étirements.</div>`;
+  }
+
+  const meals=getWeeklyMeals(wk, sc.type);
+  content+=`<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px">Repas · Semaine ${wk+1} · ~185g protéines</div>`;
+  content+=renderMeals(meals);
+
+  openModal(`${DAYS_L[dow]} — ${sc.type==='gym'?(isGymA?'Séance A':'Séance B'):sc.label}`, content);
+}
+
+// ─── TAB: PROGRAMME ───────────────────────────────────────────
+function renderProg(){
+  const s=getState();
+  const wk=getWeekNum(s);
+  const ph=getPhase(wk);
+  const eta=calcETA(s);
+
+  const phases=PHASES.map((p,i)=>`
+    <div class="phase-block${i===ph?' active-ph':''}" onclick="togglePhase(${i})">
+      <div class="phase-block-head">
+        <div class="ph-circle${i===ph?' act':''}">${i+1}</div>
+        <div style="flex:1"><div class="ph-title">${p.name}${i===ph?' ← tu es ici':''}</div><div style="font-size:11px;color:var(--muted);margin-top:1px">${p.weeks} · ${p.desc}</div></div>
+        <div style="color:var(--muted);font-size:16px" id="ph-arrow-${i}">${i===ph?'↑':'›'}</div>
+      </div>
+      <div class="ph-body${i===ph?' open':''}" id="ph-body-${i}">
+        ${p.details.map(d=>`<div class="ph-item"><div class="ph-item-ico">${d.ico}</div><div><div style="font-weight:500;font-size:13px">${d.t}</div><div style="font-size:12px;color:var(--muted);margin-top:1px">${d.d}</div></div></div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  document.getElementById('tab-prog').innerHTML=`
+    <div class="stitle">Ton objectif</div>
+    <div class="card"><div class="card-body" style="text-align:center;padding:18px">
+      <div style="font-size:44px;font-weight:700;color:var(--green)">${eta.weeks}</div>
+      <div style="font-size:13px;color:var(--muted)">semaines estimées</div>
+      <div style="font-size:16px;font-weight:600;margin-top:6px">${eta.dateStr}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">Rythme : ${eta.rate} kg/sem · se recalcule avec tes pesées</div>
+    </div></div>
+    <div class="stitle">Les 4 phases — appuie pour les détails</div>
+    ${phases}
+    <div style="font-size:11px;color:var(--muted);text-align:center;padding:6px 0 8px">Séances salle : 1h30 · Échauffement 10 min + Muscu 50 min + Tapis 30 min</div>
+  `;
+}
+
+function togglePhase(i){
+  const b=document.getElementById('ph-body-'+i);
+  const a=document.getElementById('ph-arrow-'+i);
+  if(!b)return;
+  b.classList.toggle('open');
+  a.textContent=b.classList.contains('open')?'↑':'›';
+}
+
+function openPhaseModal(ph){
+  const p=PHASES[ph];
+  openModal(p.name,`<div style="font-size:13px;color:var(--muted);margin-bottom:14px">${p.weeks} · ${p.desc}</div>${p.details.map(d=>`<div class="ph-item"><div class="ph-item-ico">${d.ico}</div><div><div style="font-weight:500;font-size:13px">${d.t}</div><div style="font-size:12px;color:var(--muted);margin-top:1px">${d.d}</div></div></div>`).join('')}`);
+}
+
+// ─── TAB: POIDS ───────────────────────────────────────────────
+function renderPoids(){
+  const s=getState();
+  const hist=s.weights.slice(0,20).map((w,i)=>{
+    const diff=i<s.weights.length-1?(w.val-s.weights[i+1].val).toFixed(1):null;
+    const arrow=diff?(parseFloat(diff)<0?`<span style="color:var(--green)">${diff} kg</span>`:`<span style="color:var(--red)">+${diff} kg</span>`):'';
+    return`<div class="w-hist-row"><span style="color:var(--muted)">${w.date}</span><span style="font-weight:600">${w.val} kg ${arrow}</span></div>`;
+  }).join('')||'<div style="color:var(--muted);font-size:13px;padding:8px 0">Aucune mesure enregistrée</div>';
+
+  document.getElementById('tab-poids').innerHTML=`
+    <div class="stitle">Enregistrer mon poids</div>
+    <div class="w-input-row">
+      <input type="number" id="w-in" placeholder="ex: 92.5" step="0.1" min="40" max="200" inputmode="decimal">
+      <button onclick="doSaveWeight()">Ajouter</button>
+    </div>
+    <div class="stitle">Courbe de poids</div>
+    <div class="card"><div class="card-body"><div class="chart-wrap"><canvas id="wchart"></canvas></div></div></div>
+    <div class="stitle">Historique</div>
+    <div class="card"><div class="card-body">${hist}</div></div>
+    <div class="stitle">Préférences alimentaires</div>
+    <div class="tip-card">✅ = j'aime · ❌ = je n'aime pas · Sans marquage = neutre. Les repas s'adaptent automatiquement chaque semaine !</div>
+    <div class="food-grid" id="food-grid"></div>
+  `;
+  renderFoodGrid();
+  drawChart();
+}
+
+const ALL_FOODS=[
+  {id:'pois',name:'Petits pois',ico:'🫛'},{id:'haricots_verts',name:'Haricots verts',ico:'🌿'},
+  {id:'carotte',name:'Carottes',ico:'🥕'},{id:'melon',name:'Melon',ico:'🍈'},
+  {id:'poulet',name:'Blanc de poulet',ico:'🍗'},{id:'thon',name:'Thon',ico:'🐟'},
+  {id:'saumon',name:'Saumon',ico:'🍣'},{id:'oeufs',name:'Œufs',ico:'🥚'},
+  {id:'cabillaud',name:'Cabillaud',ico:'🐠'},{id:'haricots_blancs',name:'Haricots blancs',ico:'🫘'},
+  {id:'lentilles',name:'Lentilles',ico:'🫘'},{id:'riz',name:'Riz complet',ico:'🍚'},
+  {id:'pain',name:'Pain complet',ico:'🍞'},{id:'avoine',name:'Flocons d\'avoine',ico:'🌾'},
+  {id:'yaourt',name:'Yaourt nature',ico:'🥛'},{id:'fromage_frais',name:'Fromage frais 0%',ico:'🧀'},
+];
+
+function renderFoodGrid(){
+  const s=getState();
+  const prefs=s.foodPrefs||{};
+  const grid=document.getElementById('food-grid');
+  if(!grid)return;
+  grid.innerHTML=ALL_FOODS.map(f=>{
+    const st=prefs[f.id];
+    const cls=st===true?'liked':st===false?'disliked':'';
+    return`<div class="food-chip ${cls}" onclick="toggleFood('${f.id}')">
+      <span class="food-chip-ico">${f.ico}</span>
+      <span style="flex:1">${f.name}</span>
+      <span style="font-size:12px">${st===true?'✅':st===false?'❌':''}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleFood(id){
+  const s=getState();
+  if(!s.foodPrefs)s.foodPrefs={};
+  const cur=s.foodPrefs[id];
+  if(cur===undefined)s.foodPrefs[id]=true;
+  else if(cur===true)s.foodPrefs[id]=false;
+  else delete s.foodPrefs[id];
+  saveState(s);
+  renderFoodGrid();
+  if(document.getElementById('tab-today').classList.contains('active'))renderToday();
+}
+
+function doSaveWeight(){
+  const s=getState();
+  const inp=document.getElementById('w-in');
+  const val=parseFloat(inp.value);
+  if(isNaN(val)||val<40||val>200)return;
+  s.weight=val;
+  s.weights.unshift({val,date:new Date().toLocaleDateString('fr-FR')});
+  if(s.weights.length>30)s.weights=s.weights.slice(0,30);
+  inp.value='';
+  saveState(s);
+  renderPoids();
+  renderHeader();
+  if(document.getElementById('tab-today').classList.contains('active'))renderToday();
+}
+
+function drawChart(){
+  const s=getState();
+  const canvas=document.getElementById('wchart');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const w=canvas.offsetWidth||300;
+  const h=140;
+  canvas.width=w*dpr;canvas.height=h*dpr;
+  ctx.scale(dpr,dpr);
+  if(s.weights.length<2){
+    ctx.fillStyle='#94a3b8';ctx.font='13px DM Sans,sans-serif';ctx.textAlign='center';
+    ctx.fillText('Ajoute au moins 2 pesées pour voir la courbe',w/2,h/2);return;
+  }
+  const pts=s.weights.slice().reverse();
+  const vals=pts.map(p=>p.val);
+  const mn=Math.min(...vals,80)-1;const mx=Math.max(...vals,93)+1;
+  const pad={t:16,r:8,b:28,l:36};
+  const cw=w-pad.l-pad.r;const ch=h-pad.t-pad.b;
+  const xp=i=>pad.l+i*(cw/Math.max(pts.length-1,1));
+  const yp=v=>pad.t+ch-(v-mn)/(mx-mn)*ch;
+  ctx.strokeStyle='#e2e8f0';ctx.lineWidth=1;
+  [80,85,90].forEach(v=>{if(v>=mn&&v<=mx){
+    ctx.beginPath();ctx.moveTo(pad.l,yp(v));ctx.lineTo(pad.l+cw,yp(v));ctx.stroke();
+    ctx.fillStyle='#94a3b8';ctx.font='10px DM Sans,sans-serif';ctx.textAlign='right';ctx.fillText(v,pad.l-4,yp(v)+3);
+  }});
+  ctx.strokeStyle='#22c55e';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(pad.l,yp(80));ctx.lineTo(pad.l+cw,yp(80));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.strokeStyle='#3b82f6';ctx.lineWidth=2.5;
+  ctx.beginPath();pts.forEach((p,i)=>{i===0?ctx.moveTo(xp(i),yp(p.val)):ctx.lineTo(xp(i),yp(p.val))});ctx.stroke();
+  ctx.fillStyle='rgba(59,130,246,.08)';ctx.beginPath();
+  pts.forEach((p,i)=>{i===0?ctx.moveTo(xp(i),yp(p.val)):ctx.lineTo(xp(i),yp(p.val))});
+  ctx.lineTo(xp(pts.length-1),h-pad.b);ctx.lineTo(xp(0),h-pad.b);ctx.closePath();ctx.fill();
+  pts.forEach((p,i)=>{ctx.fillStyle='#fff';ctx.strokeStyle='#3b82f6';ctx.lineWidth=2;ctx.beginPath();ctx.arc(xp(i),yp(p.val),4,0,Math.PI*2);ctx.fill();ctx.stroke();});
+  ctx.fillStyle='#94a3b8';ctx.font='9px DM Sans,sans-serif';ctx.textAlign='center';
+  const step=Math.max(1,Math.floor(pts.length/4));
+  pts.forEach((p,i)=>{if(i%step===0||i===pts.length-1)ctx.fillText(p.date.slice(0,5),xp(i),h-8)});
+  ctx.fillStyle='#22c55e';ctx.font='10px DM Sans,sans-serif';ctx.textAlign='right';
+  ctx.fillText('objectif 80 kg',w-6,yp(80)-4);
+}
+
+// ─── TAB: COURSES ─────────────────────────────────────────────
+function renderCourses(){
+  const s=getState();
+  const wk=getWeekNum(s);
+  const groups=getWeekShopList(wk);
+  const checked=s.shopChecked||{};
+  const total=Object.values(groups).reduce((a,g)=>a+g.length,0);
+  const done=Object.keys(checked).filter(k=>checked[k]).length;
+
+  let html=`
+    <div class="tip-card">📅 <strong>Semaine ${wk+1}</strong> · Liste générée selon tes repas de la semaine et tes préférences. Change chaque semaine automatiquement !</div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">Articles</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--green)">${done}</div><div class="stat-lbl">Cochés</div></div>
+      <div class="stat-card"><div class="stat-val">${total-done}</div><div class="stat-lbl">Restants</div></div>
+    </div>
+    <button onclick="resetShop()" style="width:100%;padding:10px;border:1.5px solid var(--border);border-radius:12px;background:var(--card);font-size:13px;font-family:inherit;color:var(--muted);margin-bottom:12px;cursor:pointer">🔄 Tout décocher</button>
+  `;
+  Object.entries(groups).forEach(([cat,items])=>{
+    html+=`<div class="shop-day"><div class="shop-day-title">${cat}</div><div class="card"><div class="card-body">`;
+    items.forEach(item=>{
+      const key=item.name;
+      const isChecked=!!checked[key];
+      html+=`<div class="shop-item-row">
+        <div class="shop-check ${isChecked?'checked':''}" onclick="toggleShop('${key.replace(/'/g,"\\'").replace(/"/g,'\\"')}')">
+          ${isChecked?'✓':''}
+        </div>
+        <div class="shop-name" style="${isChecked?'text-decoration:line-through;color:var(--muted)':''}">${item.name}</div>
+        <div class="shop-qty">${item.qty}</div>
+      </div>`;
+    });
+    html+=`</div></div></div>`;
+  });
+  document.getElementById('tab-courses').innerHTML=html;
+}
+
+function toggleShop(name){
+  const s=getState();
+  if(!s.shopChecked)s.shopChecked={};
+  s.shopChecked[name]=!s.shopChecked[name];
+  saveState(s);
+  renderCourses();
+}
+function resetShop(){
+  const s=getState();s.shopChecked={};saveState(s);renderCourses();
+}
+
+// ─── MODAL ────────────────────────────────────────────────────
+function openModal(title,body){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').innerHTML=body;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+function closeModalOutside(e){if(e.target===document.getElementById('modal'))closeModal()}
+
+// ─── SHOW TAB ─────────────────────────────────────────────────
+function showTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.querySelector('.scroll-area').scrollTop=0;
+  const renders={today:renderToday,week:renderWeek,prog:renderProg,poids:renderPoids,courses:renderCourses};
+  if(renders[name])renders[name]();
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+// ─── BADGES ───────────────────────────────────────────────────
+const BADGE_DEFS=[
+  {id:'first',ico:'🌱',name:'Premier pas',desc:'1ère séance',check:s=>Object.keys(s.doneDays||{}).length>=1},
+  {id:'week1',ico:'🔥',name:'7 jours',desc:'7 jours de série',check:s=>s.streak>=7},
+  {id:'ten',ico:'💪',name:'10 séances',desc:'10 séances total',check:s=>Object.keys(s.doneDays||{}).length>=10},
+  {id:'minus3',ico:'⚖️',name:'-3 kg',desc:'Perdu 3 kg',check:s=>s.weights&&s.weights.length>0&&(93-s.weights[0].val)>=3},
+  {id:'minus5',ico:'🏅',name:'-5 kg',desc:'Perdu 5 kg',check:s=>s.weights&&s.weights.length>0&&(93-s.weights[0].val)>=5},
+  {id:'minus10',ico:'🏆',name:'-10 kg',desc:'Perdu 10 kg',check:s=>s.weights&&s.weights.length>0&&(93-s.weights[0].val)>=10},
+  {id:'streak14',ico:'⚡',name:'2 semaines',desc:'14 jours de série',check:s=>s.streak>=14},
+  {id:'streak30',ico:'🌟',name:'1 mois',desc:'30 jours de série',check:s=>s.streak>=30},
+  {id:'phase2',ico:'🚀',name:'Phase 2',desc:'Semaine 4 atteinte',check:s=>getWeekNum(s)>=3},
+  {id:'phase3',ico:'💥',name:'Phase 3',desc:'Semaine 7 atteinte',check:s=>getWeekNum(s)>=6},
+  {id:'phase4',ico:'👑',name:'Phase 4',desc:'Semaine 11 atteinte',check:s=>getWeekNum(s)>=10},
+  {id:'goal',ico:'🎯',name:'Objectif !',desc:'80 kg atteints',check:s=>s.weights&&s.weights.length>0&&s.weights[0].val<=80},
+];
+
+function checkBadges(){
+  const s=getState();
+  if(!s.unlockedBadges)s.unlockedBadges=[];
+  let newB=[];
+  BADGE_DEFS.forEach(b=>{if(!s.unlockedBadges.includes(b.id)&&b.check(s)){s.unlockedBadges.push(b.id);newB.push(b);}});
+  if(newB.length){saveState(s);setTimeout(()=>newB.forEach(b=>showBadgeNotif(b)),500);}
+}
+function showBadgeNotif(b){
+  openModal('🏅 Badge débloqué !','<div style="text-align:center;padding:20px 0"><div style="font-size:64px">'+b.ico+'</div><div style="font-size:20px;font-weight:700;margin-top:12px">'+b.name+'</div><div style="color:var(--muted);margin-top:6px">'+b.desc+'</div></div>');
+}
+function showBadges(){
+  const s=getState();if(!s.unlockedBadges)s.unlockedBadges=[];
+  const html='<div class="badges-grid">'+BADGE_DEFS.map(b=>{
+    const u=s.unlockedBadges.includes(b.id);
+    return '<div class="badge-item '+(u?'unlocked':'locked')+'"><div class="badge-ico">'+b.ico+'</div><div class="badge-name">'+b.name+'</div><div class="badge-desc">'+b.desc+'</div></div>';
+  }).join('')+'</div>';
+  openModal('Mes badges 🏅 ('+s.unlockedBadges.length+'/'+BADGE_DEFS.length+')',html);
+}
+
+// ─── PROTEIN COUNTER ──────────────────────────────────────────
+function getProteinEaten(){
+  const s=getState();const key=todayKey();
+  const dow=new Date().getDay();const sc=SCHED[dow];
+  const wk=getWeekNum(s);
+  const meals=getWeeklyMeals(wk,sc.type);
+  const done=(s.mealsDone||{})[key]||{};
+  let total=0;
+  meals.forEach((m,i)=>{
+    if(done[i]&&!m.t.includes('Créatine')){
+      const match=m.k.match(/(\d+)g P/);
+      if(match)total+=parseInt(match[1]);
+    }
+  });
+  return total;
+}
+
+function toggleMealDone(idx){
+  const s=getState();const key=todayKey();
+  if(!s.mealsDone)s.mealsDone={};
+  if(!s.mealsDone[key])s.mealsDone[key]={};
+  s.mealsDone[key][idx]=!s.mealsDone[key][idx];
+  saveState(s);renderToday();
+}
+
+// ─── HYDRATION ────────────────────────────────────────────────
+function addWater(idx){
+  const s=getState();const key=todayKey();
+  if(!s.hydration)s.hydration={};
+  const cur=s.hydration[key]||0;
+  s.hydration[key]=idx<cur?idx:idx+1;
+  saveState(s);renderToday();
+}
+
+// ─── TIRED MODE ───────────────────────────────────────────────
+function toggleTired(){
+  const s=getState();s.tiredMode=!s.tiredMode;saveState(s);renderToday();
+}
+
+// ─── TIMER ────────────────────────────────────────────────────
+var timerInterval=null,timerRemaining=90,timerTotal=90,timerRunning=false;
+function openTimer(secs,name){
+  timerRemaining=secs;timerTotal=secs;timerRunning=false;
+  document.getElementById('timer-display').textContent=fmtTime(secs);
+  document.getElementById('timer-exercise').textContent=name?'Prochain : '+name:'';
+  document.getElementById('t-start').textContent='▶ Démarrer';
+  document.getElementById('t-start').className='t-btn-main t-btn-go';
+  updateArc(1);
+  document.getElementById('timer-overlay').classList.add('open');
+}
+function closeTimer(){clearInterval(timerInterval);timerRunning=false;document.getElementById('timer-overlay').classList.remove('open');}
+function toggleTimer(){
+  if(timerRunning){
+    clearInterval(timerInterval);timerRunning=false;
+    document.getElementById('t-start').textContent='▶ Reprendre';
+    document.getElementById('t-start').className='t-btn-main t-btn-go';
+  } else {
+    timerRunning=true;
+    document.getElementById('t-start').textContent='⏸ Pause';
+    document.getElementById('t-start').className='t-btn-main t-btn-pause';
+    timerInterval=setInterval(function(){
+      timerRemaining--;
+      document.getElementById('timer-display').textContent=fmtTime(timerRemaining);
+      updateArc(timerRemaining/timerTotal);
+      if(timerRemaining<=0){
+        clearInterval(timerInterval);timerRunning=false;
+        document.getElementById('timer-display').textContent='GO !';
+        document.getElementById('t-start').textContent='▶ Relancer';
+        document.getElementById('t-start').className='t-btn-main t-btn-go';
+        timerRemaining=timerTotal;updateArc(1);
+      }
+    },1000);
+  }
+}
+function fmtTime(s){return Math.floor(s/60)+':'+(s%60<10?'0':'')+(s%60);}
+function updateArc(pct){
+  var arc=document.getElementById('timer-arc');
+  if(arc){var c=2*Math.PI*80;arc.style.strokeDashoffset=c*(1-pct);}
+}
+
+// ─── STRENGTH LOGGER ──────────────────────────────────────────
+function openStrengthLog(exName){
+  const s=getState();
+  const hist=(s.strengthHistory||{})[exName]||[];
+  const histHTML=hist.length?'<div style="margin-top:12px"><div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Historique</div>'+hist.map(function(h,i){
+    const prev=hist[i+1];const diff=prev?(h.val-prev.val).toFixed(1):null;
+    const arrow=diff?(parseFloat(diff)>0?'<span style="color:var(--green)">+'+diff+' kg ↑</span>':(parseFloat(diff)<0?'<span style="color:var(--red)">'+diff+' kg ↓</span>':'')):'';
+    return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="color:var(--muted)">'+h.date+'</span><span style="font-weight:600">'+h.val+' kg '+arrow+'</span></div>';
+  }).join('')+'</div>':'';
+  openModal('Logger les charges 📝 — '+exName,
+    '<div style="font-size:13px;color:var(--muted);margin-bottom:12px">Entre le poids utilisé (kg)</div>'+
+    '<div style="display:flex;gap:8px;margin-bottom:8px">'+
+    '<input type="number" id="kg-inp" placeholder="ex: 40" step="2.5" min="0" max="300" inputmode="decimal" style="flex:1;padding:12px;font-size:16px;border:1.5px solid var(--border);border-radius:12px;background:var(--card);color:var(--text);font-family:inherit">'+
+    '<button onclick="saveStrength(\''+exName.replace(/'/g,"\\'")+'\')" style="padding:12px 16px;border:none;border-radius:12px;background:var(--green);color:#fff;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer">Sauver</button>'+
+    '</div>'+histHTML
+  );
+}
+function saveStrength(exName){
+  const inp=document.getElementById('kg-inp');const val=parseFloat(inp.value);
+  if(isNaN(val)||val<0)return;
+  const s=getState();
+  if(!s.strengthHistory)s.strengthHistory={};
+  if(!s.strengthHistory[exName])s.strengthHistory[exName]=[];
+  s.strengthHistory[exName].unshift({val:val,date:new Date().toLocaleDateString('fr-FR')});
+  if(s.strengthHistory[exName].length>10)s.strengthHistory[exName]=s.strengthHistory[exName].slice(0,10);
+  saveState(s);closeModal();renderToday();
+}
+
+// ─── OVERRIDE renderToday to add new features ─────────────────
+var _origRenderToday = renderToday;
+renderToday = function(){
+  _origRenderToday();
+  // Inject protein bar, hydration, tired btn, meal checks, quick meals after render
+  injectTodayExtras();
+};
+
+function injectTodayExtras(){
+  const s=getState();const key=todayKey();
+  const dow=new Date().getDay();const sc=SCHED[dow];
+  const wk=getWeekNum(s);
+  const isDone=!!(s.doneDays||{})[key];
+
+  // Protein bar
+  const protEaten=getProteinEaten();
+  const protPct=Math.min(100,Math.round(protEaten/185*100));
+  const protHTML='<div class="prot-bar-wrap">'+
+    '<div class="prot-bar-top"><span class="prot-bar-title">💪 Protéines du jour</span><span class="prot-bar-val">'+protEaten+'g / 185g</span></div>'+
+    '<div class="prot-bar-bg"><div class="prot-bar-fill" style="width:'+protPct+'%"></div></div>'+
+    '</div>';
+
+  // Hydration
+  const todayH=(s.hydration||{})[key]||0;const wt=sc.type!=='rest'?10:8;
+  const wbtns=Array.from({length:wt},function(_,i){return '<div class="water-btn'+(i<todayH?' filled':'')+'" onclick="addWater('+i+')">'+(i<todayH?'💧':'○')+'</div>';}).join('');
+  const hydHTML='<div class="hydra-wrap">'+
+    '<div class="hydra-top"><span class="hydra-title">💧 Hydratation</span><span class="hydra-count">'+todayH+' / '+wt+' verres</span></div>'+
+    '<div class="hydra-row">'+wbtns+'</div>'+
+    '</div>';
+
+  // Inject before stitle "Séance du jour"
+  const tab=document.getElementById('tab-today');
+  if(!tab)return;
+  const stitleNodes=tab.querySelectorAll('.stitle');
+  if(stitleNodes.length>0){
+    const seanceTitle=stitleNodes[0];
+    const wrapper=document.createElement('div');
+    wrapper.innerHTML=protHTML+hydHTML;
+    tab.insertBefore(wrapper,seanceTitle);
+  }
+
+  // Add tired btn after done btn
+  if(!isDone&&sc.type!=='rest'){
+    const doneBtn=tab.querySelector('.done-btn');
+    if(doneBtn&&!tab.querySelector('.tired-btn')){
+      const tb=document.createElement('button');
+      tb.className='tired-btn';
+      tb.onclick=toggleTired;
+      tb.textContent=s.tiredMode?'❌ Désactiver mode allégé':'😴 Je suis fatiguée · mode allégé';
+      doneBtn.parentNode.insertBefore(tb,doneBtn.nextSibling);
+    }
+  }
+
+  // Add meal checkboxes
+  const meals=getWeeklyMeals(wk,sc.type);
+  const doneMeals=(s.mealsDone||{})[key]||{};
+  const mealRows=tab.querySelectorAll('.meal-row');
+  mealRows.forEach(function(row,i){
+    if(i>=meals.length)return;
+    const m=meals[i];if(m.t.includes('Créatine'))return;
+    if(row.querySelector('.meal-check'))return;
+    const isDoneM=!!doneMeals[i];
+    const chk=document.createElement('div');
+    chk.className='meal-check'+(isDoneM?' checked':'');
+    chk.textContent=isDoneM?'✓':'';
+    chk.onclick=function(){toggleMealDone(i);};
+    const mealT=row.querySelector('.meal-t');
+    if(mealT){mealT.style.display='flex';mealT.style.justifyContent='space-between';mealT.appendChild(chk);}
+    if(isDoneM)row.style.opacity='0.55';
+  });
+
+  // Quick meals
+  const qm=getQuickMeals(sc.type);
+  const qHTML='<div class="stitle">⚡ Repas rapides si t\'as pas le temps</div>'+
+    qm.map(function(q){return '<div class="quick-meal"><strong>'+q.title+'</strong>'+q.meal+'</div>';}).join('');
+  tab.insertAdjacentHTML('beforeend',qHTML);
+
+  // Badges row
+  const unl=(s.unlockedBadges||[]).length;
+  const bHTML='<div style="text-align:center;padding:4px 0 8px"><span style="cursor:pointer;font-size:13px;color:var(--muted)" onclick="showBadges()">🏅 '+unl+' badge'+(unl>1?'s':'')+' débloqué'+(unl>1?'s':'')+(unl<BADGE_DEFS.length?' · '+( BADGE_DEFS.length-unl)+' à débloquer':'')+'</span></div>';
+  tab.insertAdjacentHTML('beforeend',bHTML);
+}
+
+// ─── TIRED MODE IN SESSION ────────────────────────────────────
+// Override buildGymHTML to add timer + log + video buttons
+var _origBuildGymHTML=buildGymHTML;
+buildGymHTML=function(session,sessionType){
+  const s=getState();const wk=getWeekNum(s);
+  const warmupHTML=session.warmup.map(function(e){
+    return '<div class="exercise-row"><div class="ex-num" style="background:#fef3c7;color:#92400e">🔥</div><div><div class="ex-name">'+e.n+'</div><div class="ex-detail">'+e.d+'</div><span class="ex-sets">'+e.sets+'</span></div></div>';
+  }).join('');
+  const muscleHTML=session.muscle.map(function(e,i){
+    const logKey=e.n+'_w'+wk;
+    const logged=(s.strengthHistory||{})[e.n]&&s.strengthHistory[e.n][0]?s.strengthHistory[e.n][0].val:null;
+    const footer='<div class="ex-footer">'+
+      (e.rest>0?'<button class="ex-timer-btn" onclick="openTimer('+e.rest+',\''+e.n.replace(/'/g,"\\'")+'\')">⏱ '+e.rest+'s</button>':'')+
+      '<button class="ex-log-btn" onclick="openStrengthLog(\''+e.n.replace(/'/g,"\\'")+'\')">📝 '+(logged?logged+'kg':'Logger')+'</button>'+
+      (logged?'<span class="ex-logged">✓ '+logged+' kg</span>':'')+
+      '<button class="ex-yt-btn" onclick="window.open(\'https://www.youtube.com/results?search_query='+encodeURIComponent((e.yt||e.n)+' exercice technique')+'\',\'_blank\')">▶ Vidéo</button>'+
+      '</div>';
+    return '<div class="exercise-row"><div class="ex-num">'+(i+1)+'</div><div><div class="ex-name">'+e.n+'</div><div class="ex-detail">'+e.d+'</div><span class="ex-sets">'+e.sets+'</span>'+footer+'</div></div>';
+  }).join('');
+  return '<div class="gym-section"><div class="gym-section-title">Échauffement <span class="gym-section-badge s-warmup">10 min</span></div><div style="padding:0 0 4px">'+warmupHTML+'</div></div>'+
+    '<div class="gym-section"><div class="gym-section-title">Programme musculaire <span class="gym-section-badge s-muscle">~50 min</span></div><div style="padding:0 0 4px">'+muscleHTML+'</div></div>'+
+    '<div class="gym-section"><div class="gym-section-title">Cardio finisher <span class="gym-section-badge s-cardio">30 min</span></div>'+
+    '<div class="tapis-card"><div class="tapis-title">🏃 Tapis de marche incliné</div><div class="tapis-stats">'+
+    '<div class="tapis-stat"><div class="tapis-val">'+session.finisher.incline+'%</div><div class="tapis-lbl">Inclinaison</div></div>'+
+    '<div class="tapis-stat"><div class="tapis-val">'+session.finisher.speed+' km/h</div><div class="tapis-lbl">Vitesse</div></div>'+
+    '<div class="tapis-stat"><div class="tapis-val">30 min</div><div class="tapis-lbl">Durée</div></div>'+
+    '</div><div class="tapis-note">'+session.finisher.note+'</div></div></div>';
+};
+
+function getQuickMeals(type){
+  const s=getState();const prefs=s.foodPrefs||{};const ok=function(id){return prefs[id]!==false;};
+  const p=ok('poulet')?'poulet':ok('thon')?'thon':'dinde';
+  const v=ok('haricots_verts')?'haricots verts':ok('pois')?'petits pois':'brocoli';
+  return[
+    {title:'⚡ 5 minutes',meal:'150g '+p+' froid + '+v+' surgelés micro-onde 3 min + 1 œuf dur · ~35g P'},
+    {title:'⚡ Shake express',meal:'Yaourt grec 200g + 30g flocons d\'avoine + banane · mixer 30 sec · ~35g P'},
+    {title:'⚡ Sans cuisson',meal:'Boîte de thon + haricots blancs + huile olive + citron · 0 cuisson · ~45g P'},
+  ];
+}
+
+// ─── TAB: CORPS ───────────────────────────────────────────────
+function renderCorps(){
+  const s=getState();
+  const meas=s.measurements||[];
+  const latest=meas[0]||null;const prev=meas[1]||null;
+  const fields=[{k:'waist',l:'Tour de taille',ico:'📏'},{k:'hips',l:'Tour de hanches',ico:'📐'},{k:'thigh',l:'Tour de cuisse (1 jambe)',ico:'🦵'},{k:'arm',l:'Tour de bras (1 bras)',ico:'💪'},{k:'chest',l:'Poitrine',ico:'👚'}];
+  const measHTML=latest?fields.map(function(f){
+    const val=latest[f.k];if(!val)return'';
+    const pval=prev?prev[f.k]:null;
+    const diff=pval?(val-pval).toFixed(1):null;
+    const diffHTML=diff?(parseFloat(diff)<0?'<div class="meas-diff" style="color:var(--green)">'+diff+' cm ↓</div>':(parseFloat(diff)>0?'<div class="meas-diff" style="color:var(--red)">+'+diff+' cm ↑</div>':'')):'' ;
+    return'<div class="meas-item"><div class="meas-label">'+f.ico+' '+f.l+'</div><div class="meas-val">'+val+' cm</div>'+diffHTML+'</div>';
+  }).join(''):'<div style="font-size:13px;color:var(--muted);grid-column:span 2;padding:4px 0">Aucune mesure enregistrée</div>';
+
+  const mainEx=['Squat barre libre','Hip thrust barre','Développé couché barre','Tractions assistées','Soulevé de terre roumain'];
+  const sh=s.strengthHistory||{};
+  const strengthHTML=mainEx.map(function(ex){
+    const hist=sh[ex]||[];const best=hist.length?Math.max.apply(null,hist.map(function(h){return h.val;})):null;
+    const last=hist[0]||null;
+    return'<div class="strength-item"><div class="strength-name">'+ex+(best?'<span class="strength-best">'+best+' kg</span>':'')+'</div>'+
+      '<div class="strength-hist">'+(last?'Dernière : '+last.val+' kg le '+last.date:'Pas encore loggé')+'</div>'+
+      '<div class="strength-add"><input type="number" id="str-'+ex.replace(/[^a-z]/gi,'').slice(0,8)+'" placeholder="kg aujourd\'hui" step="2.5" min="0" max="300" inputmode="decimal">'+
+      '<button onclick="quickLogStrength(\''+ex.replace(/'/g,"\\'")+'\',' +'\'str-'+ex.replace(/[^a-z]/gi,'').slice(0,8)+'\')">+</button></div></div>';
+  }).join('');
+
+  document.getElementById('tab-corps').innerHTML=
+    '<div class="stitle">Mensurations</div>'+
+    '<div class="meas-grid">'+measHTML+'</div>'+
+    '<div class="stitle">Enregistrer mes mensurations</div>'+
+    '<div class="card"><div class="card-body">'+
+    '<div class="meas-input-grid">'+fields.map(function(f){return'<div class="meas-input-wrap"><label>'+f.ico+' '+f.l+'</label><input type="number" id="meas-'+f.k+'" placeholder="cm" step="0.5" min="20" max="200" inputmode="decimal" value="'+(latest&&latest[f.k]?latest[f.k]:'')+'"></div>';}).join('')+'</div>'+
+    '<button onclick="saveMeasurements()" style="width:100%;padding:12px;border:none;border-radius:12px;background:var(--green);color:#fff;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:4px">Enregistrer</button>'+
+    '</div></div>'+
+    '<div class="stitle">Records de force 💪</div>'+
+    '<div class="card"><div class="card-body">'+strengthHTML+'</div></div>'+
+    '<div class="tip-card"><strong>Coach dit :</strong> Même si la balance stagne, les cm diminuent quand tu gagnes du muscle. Mesure-toi toutes les 2 semaines !</div>';
+}
+
+function saveMeasurements(){
+  const s=getState();const fields=['waist','hips','thigh','arm','chest'];
+  const entry={date:new Date().toLocaleDateString('fr-FR')};let hasVal=false;
+  fields.forEach(function(k){const el=document.getElementById('meas-'+k);if(el&&el.value){entry[k]=parseFloat(el.value);hasVal=true;}});
+  if(!hasVal)return;
+  if(!s.measurements)s.measurements=[];
+  s.measurements.unshift(entry);
+  if(s.measurements.length>20)s.measurements=s.measurements.slice(0,20);
+  saveState(s);renderCorps();
+}
+
+function quickLogStrength(exName,inputId){
+  const inp=document.getElementById(inputId);if(!inp||!inp.value)return;
+  const val=parseFloat(inp.value);if(isNaN(val)||val<=0)return;
+  const s=getState();
+  if(!s.strengthHistory)s.strengthHistory={};
+  if(!s.strengthHistory[exName])s.strengthHistory[exName]=[];
+  s.strengthHistory[exName].unshift({val:val,date:new Date().toLocaleDateString('fr-FR')});
+  if(s.strengthHistory[exName].length>10)s.strengthHistory[exName]=s.strengthHistory[exName].slice(0,10);
+  saveState(s);inp.value='';renderCorps();
+}
+
+// ─── OVERRIDE showTab to handle corps ─────────────────────────
+var _origShowTab=showTab;
+showTab=function(name,btn){
+  _origShowTab(name,btn);
+  if(name==='corps')renderCorps();
+};
+
+// ─── OVERRIDE markDone to check badges ────────────────────────
+var _origMarkDone=markDone;
+markDone=function(){
+  _origMarkDone();
+  setTimeout(checkBadges,300);
+};
+
+// ─── INIT NEW FEATURES ────────────────────────────────────────
+checkBadges();
+</script>
+</body>
+</html>
